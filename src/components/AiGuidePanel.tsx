@@ -20,13 +20,24 @@ interface HunyuanResponse {
   error?: string | HunyuanErrorPayload;
 }
 
-const EXAMPLE_QUESTIONS = [
-  '东北角楼为什么有这么复杂的层次？',
-  '这个构件体现了什么营造智慧？',
-  '它和故宫礼制有什么关系？',
-];
-
 const FALLBACK_ERROR = 'AI 讲解暂时不可用，请稍后再试，或检查后端代理与环境变量配置。';
+
+function formatAiAnswer(text: string) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .split('\n')
+    .map((line) => line.replace(/^\s*[-*]\s+/, '').trimEnd())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function splitAnswerParagraphs(text: string) {
+  return formatAiAnswer(text)
+    .split(/\n{2,}|\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+}
 
 function getErrorMessage(payload: HunyuanResponse | null, status: number) {
   if (!payload) {
@@ -62,13 +73,25 @@ export function AiGuidePanel({ building, hotspot, context = '', compact = false 
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const buildingName = building?.trim() || '当前建筑';
 
   const placeholder = useMemo(() => {
     if (hotspot) {
       return `例如：${hotspot}在结构和审美上有什么特点？`;
     }
-    return '例如：东北角楼在故宫建筑体系中有什么意义？';
-  }, [hotspot]);
+    return `例如：${buildingName}在故宫建筑体系中有什么意义？`;
+  }, [buildingName, hotspot]);
+
+  const exampleQuestions = useMemo(
+    () => [
+      `${buildingName}为什么有这么复杂的层次？`,
+      '这个构件体现了什么营造智慧？',
+      '它和故宫礼制有什么关系？',
+    ],
+    [buildingName]
+  );
+
+  const answerParagraphs = useMemo(() => splitAnswerParagraphs(answer), [answer]);
 
   const askHunyuan = async (question: string) => {
     const trimmed = question.trim();
@@ -97,7 +120,7 @@ export function AiGuidePanel({ building, hotspot, context = '', compact = false 
         throw new Error(getErrorMessage(data, response.status));
       }
 
-      const cleanAnswer = data.answer?.trim();
+      const cleanAnswer = formatAiAnswer(data.answer || '');
       setAnswer(cleanAnswer || '混元暂时没有返回有效内容，请稍后再试，或换一种问法继续提问。');
     } catch (fetchError) {
       if (fetchError instanceof TypeError) {
@@ -152,7 +175,7 @@ export function AiGuidePanel({ building, hotspot, context = '', compact = false 
         />
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap gap-2">
-            {EXAMPLE_QUESTIONS.map((question) => (
+            {exampleQuestions.map((question) => (
               <button
                 key={question}
                 type="button"
@@ -189,7 +212,11 @@ export function AiGuidePanel({ building, hotspot, context = '', compact = false 
               : 'border-[var(--color-gold)] bg-white/75 text-[var(--color-ink)]'
           )}
         >
-          {error || answer}
+          {error || answerParagraphs.map((paragraph, index) => (
+            <p key={`${paragraph}-${index}`} className="mb-2 last:mb-0">
+              {paragraph}
+            </p>
+          ))}
         </div>
       )}
     </section>
