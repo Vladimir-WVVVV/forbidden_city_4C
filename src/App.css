@@ -1,0 +1,1095 @@
+/* =============================================================================
+   故宫建筑交互可视化网站 - 国风样式
+   ============================================================================= */
+
+/* CSS Variables - 国风配色 */
+:root {
+  --color-primary: #c41e3a;        /* 朱红 */
+  --color-primary-dark: #8b0000;   /* 深红 */
+  --color-gold: #d4af37;           /* 金色 */
+  --color-gold-light: #f4d03f;     /* 亮金 */
+  --color-cream: #f5f0e8;          /* 米白 */
+  --color-paper: #faf8f3;          /* 宣纸色 */
+  --color-ink: #2c2c2c;            /* 墨色 */
+  --color-gray: #6b6b6b;           /* 灰色 */
+  --color-border: #d4c4b0;         /* 边框色 */
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.15);
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', serif;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* =============================================================================
+   引导页样式
+   ============================================================================= */
+
+.intro-page {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.intro-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/images/nine-dragon-wall.jpg');
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+.intro-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.4) 0%,
+    rgba(0, 0, 0, 0.5) 50%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+.intro-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: white;
+  padding: 2rem;
+}
+
+.intro-title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #fff 0%, var(--color-gold-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.intro-subtitle {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  letter-spacing: 0.3em;
+  margin-bottom: 3rem;
+  opacity: 0.9;
+  color: var(--color-gold-light);
+}
+
+.intro-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 3rem;
+  font-size: 1.25rem;
+  font-family: inherit;
+  color: var(--color-gold-light);
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.9) 0%, rgba(139, 0, 0, 0.9) 100%);
+  border: 2px solid var(--color-gold);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.intro-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.intro-button:hover::before {
+  left: 100%;
+}
+
+.intro-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(212, 175, 55, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: var(--color-gold-light);
+}
+
+.button-icon {
+  transition: transform 0.3s;
+}
+
+.intro-button:hover .button-icon {
+  transform: translateX(5px);
+}
+
+.intro-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5rem 3rem;
+  z-index: 2;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.875rem;
+}
+
+.footer-left,
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.footer-right {
+  text-align: right;
+}
+
+/* =============================================================================
+   地图页样式
+   ============================================================================= */
+
+.map-page {
+  width: 100%;
+  min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-paper);
+}
+
+.map-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(to bottom, var(--color-primary-dark), var(--color-primary));
+  color: white;
+  box-shadow: var(--shadow-medium);
+  z-index: 10;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: inherit;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+.nav-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.map-container {
+  flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
+  background-color: #f8f9f5;
+  height: calc(100vh - 64px);
+  min-height: 460px;
+}
+
+.map-wrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.map-frame {
+  position: relative;
+  width: min(100vw, calc((100vh - 64px) * 1879 / 837));
+  height: min(calc(100vh - 64px), calc(100vw * 837 / 1879));
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.map-markers-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.map-markers-layer .building-marker {
+  pointer-events: auto;
+}
+
+.map-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.building-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  width: 14px;
+  height: 14px;
+  transition: var(--transition-smooth);
+}
+
+.marker-dot {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.marker-ping,
+.marker-core {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.marker-ping {
+  background: rgba(212, 175, 55, 0.55);
+  animation: marker-ripple 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.marker-core {
+  background: #8B2323;
+  border: 2px solid #D4AF37;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.72), 0 6px 16px rgba(0, 0, 0, 0.24);
+  transition: transform 180ms ease, background-color 180ms ease;
+}
+
+.building-marker:hover .marker-core,
+.building-marker.hovered .marker-core,
+.building-marker:focus-visible .marker-core {
+  transform: scale(1.2);
+  background: #D4AF37;
+}
+
+@keyframes marker-ripple {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.85;
+  }
+  70%,
+  100% {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+
+.marker-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 74px;
+  background: linear-gradient(180deg, rgba(122, 76, 36, 0.96) 0%, rgba(93, 52, 24, 0.96) 100%);
+  padding: 0.55rem 0.32rem;
+  border-radius: 7px;
+  box-shadow: 0 8px 18px rgba(83, 44, 18, 0.28);
+  text-align: center;
+  opacity: 1;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  pointer-events: none;
+  border: 1px solid rgba(229, 195, 119, 0.9);
+  z-index: 2;
+}
+
+.marker-label::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 11px;
+  height: 11px;
+  transform: translateX(-50%) rotate(45deg);
+  background: rgba(93, 52, 24, 0.96);
+  border-bottom: 1px solid rgba(229, 195, 119, 0.9);
+  border-right: 1px solid rgba(229, 195, 119, 0.9);
+}
+
+.building-marker:hover .marker-label,
+.building-marker.hovered .marker-label,
+.building-marker:focus-visible .marker-label {
+  transform: translateX(-50%) translateY(-3px);
+  box-shadow: 0 12px 24px rgba(83, 44, 18, 0.34);
+}
+
+.marker-name {
+  display: block;
+  font-weight: 600;
+  color: #F7E1A4;
+  font-size: 0.88rem;
+  line-height: 1.05;
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.38);
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.marker-desc {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  width: max-content;
+  max-width: 160px;
+  border-radius: 6px;
+  background: rgba(12, 12, 12, 0.88);
+  padding: 0.35rem 0.55rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.68rem;
+  opacity: 0;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.building-marker:hover .marker-desc,
+.building-marker.hovered .marker-desc,
+.building-marker:focus-visible .marker-desc {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.map-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: var(--color-cream);
+  border-top: 1px solid var(--color-border);
+  font-size: 0.75rem;
+  color: var(--color-gray);
+}
+
+.ancient-guide {
+  position: relative;
+  z-index: 220;
+}
+
+.ancient-guide-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  height: 2.25rem;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(212, 175, 55, 0.72);
+  border-radius: 8px;
+  background: rgba(250, 248, 243, 0.12);
+  color: #fff8e6;
+  font-family: inherit;
+  font-size: 0.88rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.ancient-guide-trigger:hover {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: var(--color-gold-light);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.ancient-guide-chevron {
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.ancient-guide-chevron.open {
+  transform: rotate(-90deg);
+}
+
+.ancient-guide-menu {
+  position: absolute;
+  top: calc(100% + 0.65rem);
+  right: 0;
+  width: min(18rem, calc(100vw - 2rem));
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(250, 248, 243, 0.98);
+  box-shadow: 0 18px 40px rgba(43, 23, 14, 0.26);
+}
+
+.ancient-guide-menu::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 1.2rem;
+  width: 12px;
+  height: 12px;
+  transform: rotate(45deg);
+  border-left: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-border);
+  background: rgba(250, 248, 243, 0.98);
+}
+
+.ancient-guide-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem 0.85rem;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-smooth);
+  font-family: inherit;
+}
+
+.ancient-guide-item:hover,
+.ancient-guide-item.active {
+  background: rgba(139, 0, 0, 0.09);
+}
+
+.ancient-guide-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.08em;
+}
+
+.ancient-guide-desc {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--color-gray);
+}
+
+/* =============================================================================
+   详情页样式
+   ============================================================================= */
+
+.detail-page {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-paper);
+}
+
+.detail-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(to bottom, var(--color-primary-dark), var(--color-primary));
+  color: white;
+  box-shadow: var(--shadow-medium);
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.detail-nav .building-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  margin-left: 2rem;
+}
+
+.detail-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  position: relative;
+  min-height: 0;
+}
+
+/* 左侧信息面板（宽度由 Tailwind 动态类控制） */
+.detail-left-panel {
+  background: var(--color-cream);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 面板概览内容 */
+.panel-overview,
+.panel-detail {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.panel-header-section {
+  margin-bottom: 0.5rem;
+}
+
+.panel-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.panel-subtitle {
+  font-size: 1rem;
+  color: var(--color-gray);
+  letter-spacing: 0.05em;
+}
+
+.divider {
+  height: 2px;
+  background: linear-gradient(to right, var(--color-border), transparent);
+  margin-top: 1rem;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-content {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--color-ink);
+  text-align: justify;
+}
+
+/* 热点列表卡片 */
+.hotspot-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.hotspot-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.hotspot-card:hover {
+  border-color: var(--color-gold);
+  box-shadow: var(--shadow-soft);
+  transform: translateX(5px);
+}
+
+.hotspot-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.hotspot-card-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.hotspot-card-desc {
+  font-size: 0.8rem;
+  color: var(--color-gray);
+}
+
+.hotspot-card-arrow {
+  color: var(--color-gray);
+  transition: transform 0.3s;
+}
+
+.hotspot-card:hover .hotspot-card-arrow {
+  transform: translateX(5px);
+  color: var(--color-primary);
+}
+
+/* 详情模式样式 */
+.detail-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(196, 30, 58, 0.1);
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  color: var(--color-primary);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: inherit;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.detail-back-btn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.detail-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-list li {
+  position: relative;
+  padding-left: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--color-ink);
+}
+
+.detail-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6rem;
+  width: 6px;
+  height: 6px;
+  background: var(--color-gold);
+  border-radius: 50%;
+}
+
+/* 技术参数网格 */
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.spec-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.spec-label {
+  font-size: 0.75rem;
+  color: var(--color-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.spec-value {
+  font-size: 0.95rem;
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+/* 文化意义区域 */
+.cultural-section {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(244, 208, 63, 0.04) 100%);
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-gold);
+}
+
+.cultural-section .section-title {
+  color: var(--color-gold-dark);
+  border-bottom-color: var(--color-gold);
+}
+
+/* 热点详情折叠卡片 */
+.hotspot-fold-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.hotspot-fold-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: var(--shadow-soft);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hotspot-fold-card.is-open {
+  border-color: var(--color-gold);
+  box-shadow: 0 8px 24px rgba(83, 44, 18, 0.12);
+}
+
+.hotspot-fold-card-trigger {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 0;
+  background: linear-gradient(180deg, rgba(250, 248, 243, 0.96), rgba(245, 240, 232, 0.86));
+  padding: 1rem 1.15rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.hotspot-fold-card-trigger:hover,
+.hotspot-fold-card-trigger:focus-visible {
+  outline: none;
+  background: rgba(212, 175, 55, 0.14);
+}
+
+.hotspot-fold-card-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.hotspot-fold-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.08em;
+}
+
+.hotspot-fold-card-hint {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--color-gray);
+}
+
+.hotspot-fold-card-action {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--color-gold);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  color: var(--color-primary-dark);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.hotspot-fold-card-icon {
+  transition: transform 0.2s ease;
+}
+
+.hotspot-fold-card.is-open .hotspot-fold-card-icon {
+  transform: rotate(180deg);
+}
+
+.hotspot-fold-card-body {
+  border-top: 1px solid var(--color-border);
+  padding: 1rem 1.15rem 1.15rem;
+}
+
+/* =============================================================================
+   右侧3D展示区
+   ============================================================================= */
+
+.detail-right-panel {
+  position: relative;
+  background: linear-gradient(135deg, var(--color-cream) 0%, var(--color-paper) 100%);
+  overflow: hidden;
+  min-height: 0;
+}
+
+.building-3d-view {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.building-3d-view canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* 热点标签 */
+/* R3F Html 已负责定位，避免与 translate(-50%) 叠加错位 */
+.hotspot-label--r3f {
+  position: relative !important;
+  transform: none !important;
+}
+
+.hotspot-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--color-gold);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  box-shadow: var(--shadow-medium);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.hotspot-label:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.hotspot-label--r3f:hover {
+  transform: scale(1.05) !important;
+}
+
+.hotspot-label:hover .hotspot-name {
+  color: white;
+}
+
+.hotspot-label.active {
+  background: var(--color-primary);
+  border-color: var(--color-gold);
+}
+
+.hotspot-label.active .hotspot-name {
+  color: white;
+}
+
+.hotspot-dot {
+  width: 10px;
+  height: 10px;
+  background: var(--color-gold);
+  border-radius: 50%;
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.7;
+  }
+}
+
+.hotspot-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(245, 240, 232, 0.9);
+  z-index: 10;
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.view-controls {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.8rem;
+  color: var(--color-gray);
+  border: 1px solid var(--color-border);
+  z-index: 5;
+  box-shadow: var(--shadow-soft);
+}
+
+/* =============================================================================
+   响应式设计
+   ============================================================================= */
+
+@media (max-width: 1200px) {
+  .specs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-content {
+    flex-direction: column;
+  }
+  
+  .map-nav,
+  .detail-nav {
+    padding: 0.75rem 1rem;
+  }
+  
+  .brand-text,
+  .detail-nav .building-name {
+    font-size: 1rem;
+  }
+  
+  .nav-btn span {
+    display: none;
+  }
+  
+  .intro-title {
+    letter-spacing: 0.2em;
+  }
+  
+  .intro-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .panel-overview,
+  .panel-detail {
+    padding: 1.5rem;
+  }
+  
+  .panel-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* =============================================================================
+   滚动条样式
+   ============================================================================= */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray);
+}
