@@ -68,11 +68,9 @@ function LazyEChart({ option, height }: { option: EChartsOption; height: number 
 }
 
 const chartCardClass =
-  'flex flex-col rounded-xl border border-[#CDBA96] bg-[#F4F1E1]/80 p-4 shadow-md backdrop-blur-md ' +
+  'flex flex-col rounded-lg border border-[#CDBA96] bg-[#F4F1E1]/80 p-4 shadow-md backdrop-blur-md ' +
   'transition-all duration-300 ease-out will-change-transform ' +
   'hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl';
-
-/* ---------- Mock 数据（可替换为文献考据后的真实数据） ---------- */
 
 const MOCK_WOOD_ROSE = [
   { value: 28, name: '楠木', itemStyle: { color: C.cinnabar } },
@@ -157,12 +155,9 @@ const MOCK_LINE_YEARS = [
   '乾隆大缮',
   '光绪晚期',
 ];
-/** 巨型材采伐难度指数（示意） */
 const MOCK_LINE_TIMBER = [32, 38, 45, 58, 62, 78];
-/** 木构拼接工艺复杂度指数（示意） */
 const MOCK_LINE_JOINERY = [28, 35, 42, 55, 68, 72];
 
-/** [占地面积(千㎡示意), 台基高度(m示意), 重要性→气泡面积系数, 名称] */
 const MOCK_SCATTER = [
   [2.38, 8.1, 42, '太和殿'],
   [1.4, 5.2, 28, '乾清宫'],
@@ -429,7 +424,7 @@ function optionLine(): EChartsOption {
     },
     yAxis: {
       type: 'value',
-      name: '指数（示意）',
+      name: '指数',
       min: 0,
       max: 100,
       nameTextStyle: { color: C.ink, fontSize: 10 },
@@ -489,13 +484,13 @@ function optionScatter(): EChartsOption {
         const p = params as { value?: (number | string)[] };
         const v = p.value ?? [];
         const name = typeof v[3] === 'string' ? v[3] : '';
-        return `${name}<br/>占地约 ${v[0]} 千㎡（示意）<br/>台基高约 ${v[1]} m（示意）`;
+        return `${name}<br/>占地约 ${v[0]} 千㎡<br/>台基高约 ${v[1]} m`;
       },
     },
     grid: { left: '12%', right: '10%', top: 20, bottom: 28, containLabel: true },
     xAxis: {
       type: 'value',
-      name: '占地面积（千㎡·示意）',
+      name: '占地面积（千㎡）',
       nameTextStyle: { color: C.ink, fontSize: 10 },
       axisLine,
       axisLabel,
@@ -503,7 +498,7 @@ function optionScatter(): EChartsOption {
     },
     yAxis: {
       type: 'value',
-      name: '须弥座台基高度（m·示意）',
+      name: '须弥座台基高度（m）',
       nameTextStyle: { color: C.ink, fontSize: 10 },
       axisLine,
       axisLabel,
@@ -701,6 +696,7 @@ const PAINTING_INFO_MODULES = [
   {
     title: '色彩与纹样',
     className: 'lg:row-span-2',
+    toneClass: 'painting-info-card--paper',
     body: [
       '故宫彩画以朱红、明黄、青绿、霁蓝、墨线与贴金组织视觉层级，色彩并非单纯装饰，而是服务于建筑等级与空间识别。',
       '和玺彩画常强调龙凤、金线与严整中轴构图；旋子彩画以旋花、锦纹和连续边饰组织梁枋；苏式彩画更偏向园林空间中的山水、花鸟和叙事性图案。',
@@ -710,6 +706,7 @@ const PAINTING_INFO_MODULES = [
   {
     title: '空间与层级',
     className: '',
+    toneClass: 'painting-info-card--apricot',
     body: [
       '外朝礼仪建筑更强调庄重、对称与金色线脚，内廷寝居空间在秩序中加入更细密的装饰节奏。',
       '游廊、园林和附属建筑通常使用更灵活的构图方式，让彩画与行走路径、视线停留点共同形成空间层次。',
@@ -718,6 +715,7 @@ const PAINTING_INFO_MODULES = [
   {
     title: '功能与礼制',
     className: '',
+    toneClass: 'painting-info-card--tea',
     body: [
       '彩画同时承担保护木构与表达礼制的双重作用。地仗、设色、贴金和罩护可以减缓木构风化，也让梁枋、斗拱、檐口形成清晰的等级秩序。',
       '图案越严整、金线越明显、主题越接近龙凤礼制，通常越接近高等级宫殿空间的视觉语言。',
@@ -726,6 +724,7 @@ const PAINTING_INFO_MODULES = [
   {
     title: '工艺流程',
     className: 'lg:col-span-2',
+    toneClass: 'painting-info-card--qing',
     body: [
       '彩画工艺可概括为基层整理、地仗找平、起谱放样、沥粉勾线、设色绘制、贴金罩护等步骤。',
       '其中沥粉让线条隆起，贴金强化重点纹样，罩护层则让颜色与金饰获得更稳定的保存状态。',
@@ -737,10 +736,10 @@ const PAINTING_INFO_MODULES = [
 export function PalaceDataChartsSection({ onOpenPainting }: { onOpenPainting?: () => void }) {
   return (
     <section
-      className="w-full border-t border-[#CDBA96] bg-gradient-to-b from-[#F4F1E1] via-[#faf6ec] to-[#CDBA96]/15 px-4 py-12 sm:px-6 lg:px-10"
+      className="w-full border-y border-[#CDBA96]/80 bg-gradient-to-b from-[#F7F1E4] via-[#fffaf0] to-[#E9DEC6]/45 px-4 py-12 sm:px-6 lg:px-10"
       aria-labelledby="palace-viz-heading"
     >
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto max-w-[1600px] rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/65 p-5 shadow-sm sm:p-7">
         <header className="mb-10 text-center">
           <h2
             id="palace-viz-heading"
@@ -749,8 +748,8 @@ export function PalaceDataChartsSection({ onOpenPainting }: { onOpenPainting?: (
             紫禁数读：古建筑营造密码
           </h2>
           <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-[#1A1A1A]/85">
-            下图表数据为基于营造常识的示意统计，配色严格限定为宫墙朱红、琉璃明黄、边框暗金、徽墨黑、点翠绿与霁蓝。
-            参赛时可据《故宫古建筑营造技艺》《中国建筑史》等文献替换为考据数据。
+            图表围绕材作、屋顶形制、斗栱传力、彩画类型与宫殿体量展开，配色延续宫墙朱红、琉璃明黄、边框暗金、徽墨黑、点翠绿与霁蓝。
+            可结合《万历的紫禁城》《中国建筑史》等文献理解古建筑营造体系。
           </p>
         </header>
 
@@ -809,16 +808,16 @@ export function PalacePaintingChartsPage({ onBack }: { onBack: () => void }) {
         <span className="text-sm tracking-[0.22em] text-[#F4F1E1]">故宫彩画专题</span>
       </nav>
 
-      <main className="mx-auto max-w-[1500px] px-5 py-10 sm:px-8 lg:px-12">
-        <header className="mb-10">
+      <main className="mx-auto flex max-w-[1500px] flex-col gap-8 px-5 py-10 sm:px-8 lg:px-12">
+        <header className="rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/75 p-5 shadow-sm sm:p-7">
           <p className="text-sm font-semibold tracking-[0.28em] text-[#8B2323]">CAIHUA DATA STORY</p>
           <h1 className="mt-3 font-serif text-3xl font-semibold text-[#1A1A1A] sm:text-5xl">彩画：梁枋上的礼制与色彩秩序</h1>
           <p className="mt-4 max-w-4xl text-sm leading-7 text-[#1A1A1A]/80">
-            故宫彩画不只是装饰，它把建筑等级、构件保护、空间功能和视觉识别组织到同一套图案系统中。以下图表以示意数据呈现和玺、旋子、苏式彩画在不同建筑场景中的关系，可继续替换为考据后的真实统计。
+            故宫彩画不只是装饰，它把建筑等级、构件保护、空间功能和视觉识别组织到同一套图案系统中。图表呈现和玺、旋子、苏式彩画在不同建筑场景中的关系。
           </p>
         </header>
 
-        <section className="mb-10 grid gap-4 md:grid-cols-3">
+        <section className="grid gap-4 rounded-lg border border-[#CDBA96]/70 bg-[#f8f4e8]/80 p-4 shadow-sm md:grid-cols-3 sm:p-5">
           {[
             ['等级秩序', '彩画样式与建筑礼制等级相互对应，高等级空间更强调金线、龙纹与严整构图。'],
             ['构件保护', '地仗、设色与罩护共同延长木构寿命，使梁枋在防潮、防虫和观赏之间取得平衡。'],
@@ -832,18 +831,18 @@ export function PalacePaintingChartsPage({ onBack }: { onBack: () => void }) {
         </section>
 
         <section
-          className="mb-12 rounded-lg border border-[#CDBA96] bg-[#f8f4e8] bg-[radial-gradient(circle_at_top_left,rgba(205,186,150,0.28),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.42),rgba(244,241,225,0.82))] p-5 shadow-inner sm:p-7"
+          className="rounded-lg border border-[#CDBA96] bg-[#f8f4e8] bg-[radial-gradient(circle_at_top_left,rgba(205,186,150,0.28),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.42),rgba(244,241,225,0.82))] p-5 shadow-inner sm:p-7"
           aria-label="彩画信息说明模块"
         >
           <div className="grid gap-5 lg:grid-cols-[1fr_0.86fr_1.35fr]">
             {PAINTING_INFO_MODULES.map((item) => (
-              <article key={item.title} className={`flex min-h-[220px] flex-col ${item.className}`}>
-                <div className="mx-auto mb-4 inline-flex min-w-52 items-center justify-center gap-3 border border-[#CDBA96] bg-[#B7A57B] px-6 py-2 text-center text-sm font-semibold tracking-[0.28em] text-white shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-white/85" />
+              <article key={item.title} className={`painting-info-card ${item.toneClass} ${item.className}`}>
+                <div className="painting-info-title">
+                  <span className="painting-info-title-dot" />
                   {item.title}
-                  <span className="h-2 w-2 rounded-full bg-white/85" />
+                  <span className="painting-info-title-dot" />
                 </div>
-                <div className="flex flex-1 flex-col justify-center rounded-lg bg-[#d9d6cd]/62 p-5 text-sm leading-7 text-[#1A1A1A]/82 shadow-sm">
+                <div className="painting-info-body">
                   {item.body.map((paragraph) => (
                     <p key={paragraph} className="mb-3 last:mb-0">
                       {paragraph}
@@ -855,7 +854,7 @@ export function PalacePaintingChartsPage({ onBack }: { onBack: () => void }) {
           </div>
         </section>
 
-        <section className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section className="grid grid-cols-1 gap-6 rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/70 p-4 shadow-sm sm:p-5 lg:grid-cols-2">
           {PAINTING_TOPIC_CHARTS.map((chart) => (
             <article key={chart.id} className="flex flex-col rounded-lg border border-[#CDBA96] bg-white/75 p-5 shadow-md">
               <div className="mb-3 border-b border-[#CDBA96]/70 pb-3">

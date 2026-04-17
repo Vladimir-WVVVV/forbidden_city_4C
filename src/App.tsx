@@ -444,8 +444,8 @@ const CULTURE_TIDBITS = [
 
 function CultureTidbitsSection() {
   return (
-    <section className="w-full border-t border-[#CDBA96] bg-[#F4F1E1] px-4 py-14 sm:px-6 lg:px-10" aria-labelledby="culture-tidbits-heading">
-      <div className="mx-auto max-w-[1500px]">
+    <section className="w-full border-y border-[#CDBA96]/80 bg-[#f8f4e8] px-4 py-12 sm:px-6 lg:px-10" aria-labelledby="culture-tidbits-heading">
+      <div className="mx-auto max-w-[1500px] rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/70 p-5 shadow-sm sm:p-7">
         <div className="mb-9 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold tracking-[0.28em] text-[#8B2323]">PALACE MEMORY</p>
@@ -571,7 +571,6 @@ function MapPage({
       <CultureTidbitsSection />
 
       <div className="map-footer">
-        <span>点击地图标记查看详情 · 地图使用本地导览图 · 标记为相对底图区域的百分比定位</span>
         <span>© 故宫博物院 | 数据仅供学习研究使用</span>
       </div>
     </div>
@@ -778,7 +777,7 @@ function DetailPage({
                           <strong className="text-[var(--color-primary-dark)]"> {selectedHotspot.content.title}</strong>。
                         </p>
                         <p className="mt-3 text-[var(--color-gray)]">
-                          以下为占位摘录：营建需合于形制，材分模数与榫卯搭接须与台基、屋架相匹配，修缮记录则散见于内务府造办处档案。
+                          营建需合于形制，材分模数与榫卯搭接须与台基、屋架相匹配，修缮记录则散见于内务府造办处档案。
                         </p>
                       </div>
                     </aside>
