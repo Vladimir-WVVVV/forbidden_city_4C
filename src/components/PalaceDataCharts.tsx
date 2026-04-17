@@ -649,7 +649,8 @@ const PAINTING_TOPIC_CHARTS: ChartDef[] = [
           width: '84%',
           sort: 'none',
           gap: 5,
-          label: { color: C.paper, fontSize: 11 },
+          label: { color: '#4F463D', fontSize: 11 },
+          labelLine: { lineStyle: { color: '#8A7B68' } },
           data: [
             { value: 100, name: '木构基层整理', itemStyle: { color: C.azure } },
             { value: 84, name: '地仗与找平', itemStyle: { color: C.jade } },
@@ -813,7 +814,7 @@ export function PalacePaintingChartsPage({ onBack }: { onBack: () => void }) {
           <p className="text-sm font-semibold tracking-[0.28em] text-[#8B2323]">CAIHUA DATA STORY</p>
           <h1 className="mt-3 font-serif text-3xl font-semibold text-[#1A1A1A] sm:text-5xl">彩画：梁枋上的礼制与色彩秩序</h1>
           <p className="mt-4 max-w-4xl text-sm leading-7 text-[#1A1A1A]/80">
-            故宫彩画不只是装饰，它把建筑等级、构件保护、空间功能和视觉识别组织到同一套图案系统中。图表呈现和玺、旋子、苏式彩画在不同建筑场景中的关系。
+            故宫彩画不只是装饰，而是将建筑等级、构件保护、空间功能和视觉识别组织到同一套图案系统中。
           </p>
         </header>
 
