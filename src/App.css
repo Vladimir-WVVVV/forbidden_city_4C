@@ -660,34 +660,191 @@ html, body, #root {
 }
 
 /* 热点列表卡片 */
+.hotspot-section {
+  --hotspot-theme: var(--color-primary-dark);
+  --hotspot-accent: var(--color-gold);
+  --hotspot-soft: rgba(139, 35, 35, 0.08);
+}
+
+.hotspot-section--wumen {
+  --hotspot-theme: #8b2323;
+  --hotspot-accent: #d4af37;
+  --hotspot-soft: rgba(139, 35, 35, 0.1);
+}
+
+.hotspot-section--taihe_dian {
+  --hotspot-theme: #9b1c1c;
+  --hotspot-accent: #c99a2e;
+  --hotspot-soft: rgba(155, 28, 28, 0.1);
+}
+
+.hotspot-section--wenhua_dian {
+  --hotspot-theme: #35614a;
+  --hotspot-accent: #b9975b;
+  --hotspot-soft: rgba(53, 97, 74, 0.11);
+}
+
+.hotspot-section--wuying_dian {
+  --hotspot-theme: #76522f;
+  --hotspot-accent: #c78a3a;
+  --hotspot-soft: rgba(118, 82, 47, 0.12);
+}
+
+.hotspot-section--qianqing_gong {
+  --hotspot-theme: #7a2440;
+  --hotspot-accent: #d0aa55;
+  --hotspot-soft: rgba(122, 36, 64, 0.1);
+}
+
+.hotspot-section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.hotspot-section-head .section-title {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.hotspot-section-route {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--hotspot-theme);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.hotspot-section-count {
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--hotspot-accent) 55%, var(--color-border));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--hotspot-theme);
+  padding: 0.3rem 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.hotspot-section-lead {
+  border-left: 3px solid var(--hotspot-accent);
+  background: var(--hotspot-soft);
+  padding: 0.75rem 0.9rem;
+  color: rgba(44, 44, 44, 0.82);
+  font-size: 0.88rem;
+  line-height: 1.75;
+}
+
 .hotspot-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.8rem;
 }
 
 .hotspot-card {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
-  padding: 1rem 1.25rem;
-  background: white;
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
+  gap: 0.85rem;
+  padding: 0.9rem 1rem;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.96), color-mix(in srgb, var(--hotspot-soft) 74%, #fff)),
+    white;
+  border: 1px solid color-mix(in srgb, var(--hotspot-accent) 38%, var(--color-border));
+  border-radius: 8px;
   cursor: pointer;
   transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.hotspot-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--hotspot-theme);
+  opacity: 0.78;
+}
+
+.hotspot-card--featured {
+  border-color: color-mix(in srgb, var(--hotspot-accent) 72%, var(--color-border));
+  box-shadow: 0 10px 24px rgba(83, 44, 18, 0.08);
+}
+
+.hotspot-card--route::before,
+.hotspot-card--axis::before {
+  background: linear-gradient(180deg, var(--hotspot-accent), var(--hotspot-theme));
+}
+
+.hotspot-card--structure .hotspot-card-index {
+  border-radius: 6px;
+}
+
+.hotspot-card--skyline .hotspot-card-index {
+  border-radius: 50% 50% 8px 8px;
+}
+
+.hotspot-card--ritual .hotspot-card-index,
+.hotspot-card--symbol .hotspot-card-index {
+  box-shadow: inset 0 0 0 3px rgba(212, 175, 55, 0.22);
+}
+
+.hotspot-card--craft .hotspot-card-index,
+.hotspot-card--archive .hotspot-card-index {
+  border-radius: 5px;
+  transform: rotate(-2deg);
+}
+
+.hotspot-card--scene {
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.98), rgba(245, 239, 226, 0.86)),
+    white;
+}
+
+.hotspot-card--display {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.98), rgba(238, 244, 239, 0.78)),
+    white;
 }
 
 .hotspot-card:hover {
-  border-color: var(--color-gold);
+  border-color: var(--hotspot-accent);
   box-shadow: var(--shadow-soft);
   transform: translateX(5px);
 }
 
+.hotspot-card-index {
+  display: inline-flex;
+  width: 2.15rem;
+  min-width: 2.15rem;
+  height: 2.15rem;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  border: 1px solid var(--hotspot-accent);
+  border-radius: 50%;
+  background: #fffaf0;
+  color: var(--hotspot-theme);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
 .hotspot-card-content {
   display: flex;
+  min-width: 0;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.42rem;
+}
+
+.hotspot-card-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
 }
 
 .hotspot-card-name {
@@ -696,19 +853,43 @@ html, body, #root {
   color: var(--color-ink);
 }
 
+.hotspot-card-type {
+  border-radius: 4px;
+  background: var(--hotspot-soft);
+  color: var(--hotspot-theme);
+  padding: 0.18rem 0.42rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.hotspot-card-reading {
+  width: fit-content;
+  color: var(--hotspot-theme);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
 .hotspot-card-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: 0.8rem;
+  line-height: 1.55;
   color: var(--color-gray);
 }
 
 .hotspot-card-arrow {
+  align-self: center;
   color: var(--color-gray);
   transition: transform 0.3s;
+  flex-shrink: 0;
 }
 
 .hotspot-card:hover .hotspot-card-arrow {
   transform: translateX(5px);
-  color: var(--color-primary);
+  color: var(--hotspot-theme);
 }
 
 /* 详情模式样式 */
@@ -731,6 +912,165 @@ html, body, #root {
 .detail-back-btn:hover {
   background: var(--color-primary);
   color: white;
+}
+
+.hotspot-detail-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.85rem;
+}
+
+.hotspot-detail-meta span,
+.hotspot-detail-meta strong,
+.hotspot-detail-meta em {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.hotspot-detail-meta span {
+  background: rgba(139, 35, 35, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.hotspot-detail-meta strong {
+  border: 1px solid var(--color-gold);
+  background: #fffaf0;
+  color: var(--color-primary-dark);
+}
+
+.hotspot-detail-meta em {
+  background: rgba(212, 175, 55, 0.16);
+  color: #6b4b12;
+}
+
+.hotspot-reading-panel {
+  --reading-theme: var(--color-primary-dark);
+  --reading-accent: var(--color-gold);
+  display: grid;
+  grid-template-columns: 6.25rem 1fr;
+  gap: 1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--reading-accent) 52%, var(--color-border));
+  border-radius: 8px;
+  background:
+    linear-gradient(110deg, color-mix(in srgb, var(--reading-accent) 18%, transparent), rgba(255, 255, 255, 0.78)),
+    rgba(255, 255, 255, 0.78);
+  box-shadow: 0 12px 28px rgba(83, 44, 18, 0.08);
+}
+
+.hotspot-reading-panel--route,
+.hotspot-reading-panel--axis {
+  --reading-theme: #8b2323;
+  --reading-accent: #d4af37;
+}
+
+.hotspot-reading-panel--structure {
+  --reading-theme: #6d3326;
+  --reading-accent: #b88a43;
+}
+
+.hotspot-reading-panel--skyline {
+  --reading-theme: #7b2b2b;
+  --reading-accent: #d2a13f;
+}
+
+.hotspot-reading-panel--ritual,
+.hotspot-reading-panel--symbol {
+  --reading-theme: #7a2440;
+  --reading-accent: #d0aa55;
+}
+
+.hotspot-reading-panel--craft,
+.hotspot-reading-panel--archive {
+  --reading-theme: #76522f;
+  --reading-accent: #c78a3a;
+}
+
+.hotspot-reading-panel--scene {
+  --reading-theme: #405b47;
+  --reading-accent: #b9975b;
+}
+
+.hotspot-reading-panel--display {
+  --reading-theme: #35614a;
+  --reading-accent: #b9975b;
+}
+
+.hotspot-reading-mark {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  background: linear-gradient(180deg, var(--reading-theme), color-mix(in srgb, var(--reading-theme) 72%, #1b0c08));
+  padding: 1rem 0.85rem;
+  color: #fff8e6;
+  text-align: center;
+}
+
+.hotspot-reading-mark span {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hotspot-reading-mark strong {
+  color: color-mix(in srgb, var(--reading-accent) 85%, #fff);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+}
+
+.hotspot-reading-main {
+  min-width: 0;
+  padding: 1rem 1rem 1rem 0;
+}
+
+.hotspot-reading-kicker {
+  display: block;
+  color: var(--reading-theme);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.35rem;
+}
+
+.hotspot-reading-main h2 {
+  margin: 0;
+  color: var(--reading-theme);
+  font-size: 1.18rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.hotspot-reading-main p {
+  margin-top: 0.45rem;
+  color: rgba(44, 44, 44, 0.84);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.hotspot-reading-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.hotspot-reading-chips span {
+  border: 1px solid color-mix(in srgb, var(--reading-accent) 42%, var(--color-border));
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--reading-theme);
+  padding: 0.28rem 0.55rem;
+  font-size: 0.74rem;
+  font-weight: 700;
 }
 
 .detail-list {
@@ -1107,6 +1447,368 @@ html, body, #root {
 }
 
 /* =============================================================================
+   建筑主图热点交互
+   ============================================================================= */
+
+.building-image-hotspot {
+  --image-theme: #8b2323;
+  --image-theme-dark: #4f1712;
+  --image-theme-soft: rgba(139, 35, 35, 0.1);
+  --image-accent: #d4af37;
+  display: flex;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(250, 248, 243, 0.92), rgba(245, 240, 232, 0.96)),
+    var(--color-paper);
+}
+
+.building-image-hotspot--wumen {
+  --image-theme: #8b2323;
+  --image-theme-dark: #4a1710;
+  --image-theme-soft: rgba(139, 35, 35, 0.12);
+  --image-accent: #d4af37;
+}
+
+.building-image-hotspot--taihe_dian {
+  --image-theme: #9b1c1c;
+  --image-theme-dark: #3d1510;
+  --image-theme-soft: rgba(155, 28, 28, 0.12);
+  --image-accent: #c99a2e;
+}
+
+.building-image-hotspot--wenhua_dian {
+  --image-theme: #35614a;
+  --image-theme-dark: #203b31;
+  --image-theme-soft: rgba(53, 97, 74, 0.12);
+  --image-accent: #b9975b;
+}
+
+.building-image-hotspot--wuying_dian {
+  --image-theme: #76522f;
+  --image-theme-dark: #3f2a1c;
+  --image-theme-soft: rgba(118, 82, 47, 0.14);
+  --image-accent: #c78a3a;
+}
+
+.building-image-hotspot--qianqing_gong {
+  --image-theme: #7a2440;
+  --image-theme-dark: #32172a;
+  --image-theme-soft: rgba(122, 36, 64, 0.12);
+  --image-accent: #d0aa55;
+}
+
+.image-hotspot-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid color-mix(in srgb, var(--image-accent) 44%, var(--color-border));
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, var(--image-theme-soft), rgba(255, 255, 255, 0.74) 42%, rgba(255, 255, 255, 0.9)),
+    rgba(255, 255, 255, 0.72);
+  padding: 1rem 1.1rem;
+  box-shadow: 0 8px 24px rgba(83, 44, 18, 0.08);
+}
+
+.image-hotspot-kicker {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--image-theme);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+
+.image-hotspot-heading h2 {
+  margin: 0;
+  color: var(--image-theme-dark);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.image-hotspot-heading p {
+  margin-top: 0.35rem;
+  color: var(--color-gray);
+  font-size: 0.86rem;
+  line-height: 1.6;
+}
+
+.image-hotspot-axis {
+  flex-shrink: 0;
+  max-width: 11rem;
+  border-left: 3px solid var(--image-accent);
+  padding-left: 0.85rem;
+  color: var(--image-theme-dark);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.building-image-stage {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--image-accent) 46%, var(--color-border));
+  border-radius: 8px;
+  background: #efe7d7;
+  box-shadow: 0 18px 40px rgba(83, 44, 18, 0.16);
+}
+
+.building-image-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.06), transparent 28%, transparent 68%, rgba(40, 18, 10, 0.16));
+}
+
+.building-main-image {
+  display: block;
+  width: 100%;
+  max-height: min(58vh, 620px);
+  min-height: 300px;
+  object-fit: cover;
+  object-position: center;
+  background: linear-gradient(135deg, #efe7d7, #faf8f3);
+}
+
+.building-main-image.is-missing {
+  min-height: 360px;
+  opacity: 0;
+}
+
+.image-hotspot-marker {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 10rem;
+  transform: translate(-50%, -50%);
+  border: 1px solid color-mix(in srgb, var(--image-accent) 84%, #fff);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--image-theme) 90%, #1b0905);
+  color: #fff8e6;
+  padding: 0.32rem 0.55rem 0.32rem 0.32rem;
+  box-shadow: 0 8px 20px rgba(43, 23, 14, 0.28), 0 0 0 3px rgba(255, 255, 255, 0.62);
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  z-index: 3;
+}
+
+.image-hotspot-marker:hover,
+.image-hotspot-marker:focus-visible,
+.image-hotspot-marker.active {
+  transform: translate(-50%, -50%) scale(1.06);
+  outline: none;
+  background: var(--image-accent);
+  color: var(--image-theme-dark);
+  box-shadow: 0 10px 24px rgba(43, 23, 14, 0.32), 0 0 0 4px var(--image-theme-soft);
+}
+
+.image-hotspot-index {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--image-theme-dark);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.image-hotspot-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.building-image-hotspot--wenhua_dian .image-hotspot-marker {
+  border-radius: 6px;
+}
+
+.building-image-hotspot--wuying_dian .image-hotspot-marker {
+  transform: translate(-50%, -50%) rotate(-2deg);
+}
+
+.building-image-hotspot--wuying_dian .image-hotspot-marker:hover,
+.building-image-hotspot--wuying_dian .image-hotspot-marker:focus-visible,
+.building-image-hotspot--wuying_dian .image-hotspot-marker.active {
+  transform: translate(-50%, -50%) rotate(-2deg) scale(1.06);
+}
+
+.building-image-hotspot--qianqing_gong .image-hotspot-marker {
+  border-radius: 6px 999px 999px 6px;
+}
+
+.image-hotspot-mapnote {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 2;
+  display: flex;
+  max-width: min(18rem, calc(100% - 2rem));
+  flex-direction: column;
+  gap: 0.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.38);
+  border-radius: 8px;
+  background: rgba(35, 18, 12, 0.58);
+  padding: 0.7rem 0.85rem;
+  color: #fff8e6;
+  backdrop-filter: blur(6px);
+}
+
+.image-hotspot-mapnote span {
+  color: rgba(255, 248, 230, 0.72);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+}
+
+.image-hotspot-mapnote strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.image-hotspot-nav {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  padding: 0.15rem 0.05rem 0.25rem;
+}
+
+.image-hotspot-nav-item {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--image-accent) 45%, var(--color-border));
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--image-theme-dark);
+  padding: 0.45rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+}
+
+.image-hotspot-nav-item span {
+  color: var(--image-theme);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.image-hotspot-nav-item:hover,
+.image-hotspot-nav-item:focus-visible,
+.image-hotspot-nav-item.active {
+  outline: none;
+  border-color: var(--image-accent);
+  background: var(--image-theme);
+  color: #fff8e6;
+}
+
+.image-hotspot-nav-item:hover span,
+.image-hotspot-nav-item:focus-visible span,
+.image-hotspot-nav-item.active span {
+  color: var(--image-accent);
+}
+
+.hotspot-preview-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 34%) 1fr;
+  gap: 1rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--image-accent) 42%, var(--color-border));
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9), color-mix(in srgb, var(--image-theme-soft) 70%, rgba(255, 255, 255, 0.82))),
+    rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 28px rgba(83, 44, 18, 0.12);
+}
+
+.building-image-hotspot--taihe_dian .hotspot-preview-card,
+.building-image-hotspot--qianqing_gong .hotspot-preview-card {
+  grid-template-columns: 1fr;
+}
+
+.building-image-hotspot--taihe_dian .hotspot-preview-image,
+.building-image-hotspot--qianqing_gong .hotspot-preview-image {
+  max-height: 230px;
+}
+
+.building-image-hotspot--wenhua_dian .hotspot-preview-card {
+  box-shadow: 0 12px 26px rgba(38, 78, 62, 0.12);
+}
+
+.hotspot-preview-image,
+.hotspot-preview-empty {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+  background: #eee4d4;
+}
+
+.hotspot-preview-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  color: var(--color-gray);
+  font-size: 0.88rem;
+}
+
+.hotspot-preview-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 1rem 1rem 1rem 0;
+}
+
+.hotspot-preview-type {
+  width: fit-content;
+  border-radius: 4px;
+  background: var(--image-theme-soft);
+  color: var(--image-theme-dark);
+  padding: 0.22rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hotspot-preview-copy h3 {
+  color: var(--image-theme-dark);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.hotspot-preview-copy p {
+  color: var(--color-ink);
+  font-size: 0.92rem;
+  line-height: 1.75;
+}
+
+/* =============================================================================
    响应式设计
    ============================================================================= */
 
@@ -1119,6 +1821,7 @@ html, body, #root {
 @media (max-width: 768px) {
   .detail-content {
     flex-direction: column;
+    overflow-y: auto;
   }
   
   .map-nav,
@@ -1151,6 +1854,90 @@ html, body, #root {
   
   .panel-title {
     font-size: 1.5rem;
+  }
+
+  .hotspot-card {
+    gap: 0.65rem;
+    padding: 0.8rem;
+  }
+
+  .hotspot-card-index {
+    width: 1.9rem;
+    min-width: 1.9rem;
+    height: 1.9rem;
+  }
+
+  .hotspot-reading-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .hotspot-reading-mark {
+    min-height: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  .hotspot-reading-main {
+    padding: 0 1rem 1rem;
+  }
+
+  .building-image-hotspot {
+    padding: 1rem;
+  }
+
+  .image-hotspot-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .image-hotspot-axis {
+    max-width: none;
+    border-left: 0;
+    border-top: 2px solid var(--image-accent);
+    padding-left: 0;
+    padding-top: 0.55rem;
+  }
+
+  .building-main-image {
+    max-height: 46vh;
+    min-height: 240px;
+  }
+
+  .image-hotspot-marker {
+    max-width: 2.4rem;
+    padding: 0.25rem;
+  }
+
+  .image-hotspot-label {
+    display: none;
+  }
+
+  .image-hotspot-mapnote {
+    right: 0.7rem;
+    bottom: 0.7rem;
+    max-width: 12rem;
+    padding: 0.55rem 0.65rem;
+  }
+
+  .image-hotspot-nav-item {
+    padding: 0.42rem 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  .hotspot-preview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hotspot-preview-image,
+  .hotspot-preview-empty {
+    max-height: 240px;
+  }
+
+  .hotspot-preview-copy {
+    padding: 0 1rem 1rem;
   }
 }
 

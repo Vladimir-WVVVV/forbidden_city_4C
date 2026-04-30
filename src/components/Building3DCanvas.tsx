@@ -8,7 +8,7 @@ export type BuildingHotspotPick = {
   id: string;
   name: string;
   shortDesc: string;
-  position: { x: number; y: number; z: number };
+  position: { x: number; y: number; z?: number };
 };
 
 type Building3DCanvasProps = {
@@ -28,6 +28,8 @@ function CameraAspectSync() {
   useLayoutEffect(() => {
     if (camera instanceof THREE.PerspectiveCamera) {
       const h = Math.max(size.height, 1);
+      // R3F exposes a mutable Three.js camera; aspect must be kept in sync during panel resizing.
+      // eslint-disable-next-line react-hooks/immutability
       camera.aspect = size.width / h;
       camera.updateProjectionMatrix();
     }
@@ -59,7 +61,7 @@ function HotspotMarker({
 
   return (
     <group
-      position={[hotspot.position.x, hotspot.position.y, hotspot.position.z]}
+      position={[hotspot.position.x, hotspot.position.y, hotspot.position.z ?? 0]}
       userData={{ hotspotId: hotspot.id }}
     >
       <mesh
