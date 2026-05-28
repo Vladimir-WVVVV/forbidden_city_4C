@@ -665,42 +665,110 @@ const CULTURE_TIDBITS = [
   {
     title: '角楼为什么这么复杂',
     tag: '九梁传说',
+    intro: '从复杂屋顶组合中理解角楼的结构智慧与民间想象。',
+    tags: ['角楼结构', '九梁十八柱', '屋顶组合'],
     image: '/images/culture-memory/corner-tower-roof.jpg',
     body: '民间常用“九梁十八柱，七十二条脊”形容角楼，并不一定是精确构件计数，而是在说它的屋顶脊线繁复、转角精巧，远看像一座被展开的金色机关。',
   },
   {
     title: '门钉不只是装饰',
     tag: '宫门细节',
+    intro: '从门钉、铺首和门环中看见宫门的结构与仪式感。',
+    tags: ['宫门制度', '门钉', '空间仪式'],
     image: '/images/culture-memory/palace-door-nails.jpg',
     body: '故宫大门上的门钉、铺首和门环会让人先感到“重”。这些细节既强化门扇结构，也把出入宫城这件事变成一种有仪式感的空间体验。',
   },
   {
     title: '红墙黄瓦的辨识度',
     tag: '色彩记忆',
+    intro: '从红墙与黄琉璃瓦中识别宫城建筑的等级和气质。',
+    tags: ['红墙黄瓦', '皇家色彩', '建筑等级'],
     image: '/images/culture-memory/red-wall-yellow-tiles.jpg',
     body: '红墙与黄琉璃瓦几乎成了故宫的视觉符号。它不只是“好看”，也让观众能迅速分辨宫城建筑的等级、边界和整体气质。',
   },
   {
     title: '瑞兽守在屋脊上',
     tag: '屋脊故事',
+    intro: '从屋脊瑞兽中理解构造收边、礼制秩序与守护想象。',
+    tags: ['屋脊瑞兽', '吻兽走兽', '镇火避灾'],
     image: '/images/culture-memory/roof-beasts.jpg',
     body: '屋脊上的吻兽、走兽常被赋予镇火避灾、守护屋脊的寓意。它们一字排开，让屋顶既有防水收边的构造逻辑，也有神话般的想象力。',
   },
   {
     title: '一座城里的时间感',
     tag: '宫城日常',
+    intro: '从晨昏光影和门影变化中感受宫城的日常时间。',
+    tags: ['宫城日常', '光影', '时间感'],
     image: '/images/culture-memory/palace-daily-light.jpg',
     body: '故宫不是只在大典时存在。清晨开门、暮色落在红墙上、宫灯与门影交叠，这些日常时刻让宏大的宫城拥有更细腻的生活气息。',
   },
   {
     title: '故宫里的猫',
     tag: '今日故宫',
+    intro: '从宫猫的身影进入今日故宫更轻松、更亲近的一面。',
+    tags: ['今日故宫', '宫猫', '公众记忆'],
     image: '/images/culture-memory/palace-cat.jpg',
     body: '今天的故宫里常能看到“宫猫”的身影。它们让庄严的宫殿多了一点亲近感，也成为很多游客记住故宫的轻松入口。',
   },
 ] as const;
 
 function CultureTidbitsSection() {
+  const [isMemoryShowcaseOpen, setIsMemoryShowcaseOpen] = useState(false);
+  const [activeMemoryIndex, setActiveMemoryIndex] = useState(0);
+  const [isMemoryDetailExpanded, setIsMemoryDetailExpanded] = useState(false);
+  const activeMemory = CULTURE_TIDBITS[activeMemoryIndex];
+
+  const goToMemory = (direction: 'prev' | 'next') => {
+    setActiveMemoryIndex((current) => {
+      const offset = direction === 'next' ? 1 : -1;
+      return (current + offset + CULTURE_TIDBITS.length) % CULTURE_TIDBITS.length;
+    });
+    setIsMemoryDetailExpanded(false);
+  };
+
+  const openShowcase = () => {
+    setActiveMemoryIndex(0);
+    setIsMemoryDetailExpanded(false);
+    setIsMemoryShowcaseOpen(true);
+  };
+
+  const closeShowcase = () => {
+    setIsMemoryShowcaseOpen(false);
+    setIsMemoryDetailExpanded(false);
+  };
+
+  useEffect(() => {
+    if (!isMemoryShowcaseOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goToMemory('prev');
+      }
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goToMemory('next');
+      }
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        setIsMemoryDetailExpanded((expanded) => !expanded);
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeShowcase();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMemoryShowcaseOpen]);
+
   return (
     <section className="culture-tidbits-section" aria-labelledby="culture-tidbits-heading">
       <div className="culture-tidbits-inner">
@@ -714,6 +782,13 @@ function CultureTidbitsSection() {
           <p>
             从角楼传说、屋脊瑞兽到门钉和宫猫，故宫的文化记忆不只存在于宏大的宫殿中，也藏在可被观看、触发和讲述的细节里。
           </p>
+        </div>
+
+        <div className="culture-showcase-entry">
+          <button type="button" className="culture-showcase-open" onClick={openShowcase}>
+            开启手势展陈
+          </button>
+          <p>进入沉浸式文化图像导览模式，支持按钮与键盘切换；后续可扩展手势识别。</p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -734,6 +809,68 @@ function CultureTidbitsSection() {
           <img src="/images/culture-memory/forbidden-city-timeline.png" alt="故宫时间轴" loading="lazy" />
         </figure>
       </div>
+
+      {isMemoryShowcaseOpen && (
+        <div className="culture-showcase-overlay" role="dialog" aria-modal="true" aria-labelledby="culture-showcase-title">
+          <div className="culture-showcase-shell">
+            <header className="culture-showcase-header">
+              <div>
+                <span className="culture-showcase-kicker">非接触式展陈模式 · UI 基础版</span>
+                <h2 id="culture-showcase-title">文化拾遗 · 手势展陈</h2>
+              </div>
+              <div className="culture-showcase-status">
+                <span>第 {activeMemoryIndex + 1} / {CULTURE_TIDBITS.length} 项</span>
+                <button type="button" className="culture-showcase-close" onClick={closeShowcase} aria-label="退出展陈">
+                  ×
+                </button>
+              </div>
+            </header>
+
+            <main className="culture-showcase-main">
+              <figure className="culture-showcase-visual">
+                <img src={activeMemory.image} alt={`${activeMemory.tag}：${activeMemory.title}`} />
+              </figure>
+
+              <section className="culture-showcase-copy">
+                <span className="culture-showcase-tag">{activeMemory.tag}</span>
+                <h3>{activeMemory.tag}：{activeMemory.title}</h3>
+                <p className="culture-showcase-intro">{activeMemory.intro}</p>
+                <div className="culture-showcase-keywords" aria-label="关键词">
+                  {activeMemory.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <div className={`culture-showcase-detail ${isMemoryDetailExpanded ? 'is-expanded' : ''}`}>
+                  <p>{activeMemory.body}</p>
+                </div>
+                {!isMemoryDetailExpanded && (
+                  <p className="culture-showcase-summary">{activeMemory.body}</p>
+                )}
+                <div className="culture-showcase-reserve">
+                  {/* TODO: 后续接入 MediaPipe Hand Landmarker，将左挥、右挥、张开手掌、握拳映射为展陈控制动作。 */}
+                  手势识别将在下一阶段接入；当前可使用键盘与按钮体验展陈流程。
+                </div>
+              </section>
+            </main>
+
+            <footer className="culture-showcase-footer">
+              <div className="culture-showcase-hints">
+                <span>← / → 切换主题</span>
+                <span>Enter 或 Space 展开讲解</span>
+                <span>Esc 退出展陈</span>
+              </div>
+              <div className="culture-showcase-actions">
+                <button type="button" onClick={() => goToMemory('prev')}>上一项</button>
+                <button type="button" onClick={() => goToMemory('next')}>下一项</button>
+                <button type="button" onClick={() => setIsMemoryDetailExpanded((expanded) => !expanded)}>
+                  {isMemoryDetailExpanded ? '收起讲解' : '展开讲解'}
+                </button>
+                <button type="button" onClick={closeShowcase}>退出展陈</button>
+              </div>
+            </footer>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
