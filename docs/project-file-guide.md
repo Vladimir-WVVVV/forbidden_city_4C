@@ -27,7 +27,9 @@
 - 动画：GSAP、CSS animation
 - 3D：Three.js、@react-three/fiber、@react-three/drei
 - 图表：ECharts、echarts-for-react
+- 手势识别：MediaPipe Tasks Vision / Hand Landmarker，依赖包为 `@mediapipe/tasks-vision`
 - 后端代理：Express、dotenv、cors、腾讯混元兼容接口
+- 部署：Render 等支持 Node 的平台
 
 ## 建筑类型与详情页逻辑
 
@@ -121,6 +123,81 @@ public/images/culture-memory/
 - 不要热链外站图片。
 - 不要使用 AI 生成图片替代真实素材。
 
+### 文化拾遗手势展陈模式
+
+文化拾遗区域新增“开启手势展陈”按钮。点击后打开全屏沉浸式 overlay，展示 6 个文化拾遗主题。每个主题包含大图、标题、默认短文本、关键词标签和展开讲解长文本。
+
+当前每个文化主题的数据层级应包含：
+
+- `intro`：默认显示的短介绍，完整显示，不应省略。
+- `detail`：展开讲解后的长文本。
+- `tags`：关键词标签。
+- `image`：对应图片路径。
+
+默认状态显示 `intro`，点击“展开讲解”或使用张开手掌手势后显示 `detail`。切换上一项 / 下一项时，展开状态应自动收起，避免 overlay 默认文字过长，同时保留展陈讲解的信息层级。
+
+键盘操作：
+
+- `ArrowLeft`：上一项。
+- `ArrowRight`：下一项。
+- `Enter` / `Space`：展开或收起讲解。
+- `Escape`：退出展陈。
+
+按钮操作：
+
+- 上一项。
+- 下一项。
+- 展开讲解 / 收起讲解。
+- 退出展陈。
+- 开启 / 关闭手势识别。
+
+手势操作：
+
+- 手向左划：下一项。
+- 手向右划：上一项。
+- 张开手掌：展开 / 收起讲解。
+- 握拳：收起讲解或保持当前安全逻辑，不直接退出 overlay。
+
+手势识别只作用于“文化拾遗 · 手势展陈”overlay，不会控制东北角楼 3D 模型，不会控制地图页，不会控制 AI，也不会上传视频流到后端。
+
+### 手势识别运行条件
+
+手势识别依赖浏览器摄像头权限。用户必须点击“开启手势识别”后才会请求摄像头；页面不会在打开 overlay 时自动请求摄像头。
+
+运行条件：
+
+- 本地 `localhost` 一般允许摄像头。
+- 线上需要 HTTPS。
+- Render 部署地址为 HTTPS，原则上支持浏览器摄像头权限。
+- 如果用户拒绝摄像头权限，仍可使用按钮和键盘操作。
+- 如果摄像头被占用或浏览器不支持，也不会影响普通展陈模式。
+
+隐私原则：
+
+```text
+摄像头画面仅用于浏览器本地手势识别，不上传视频流。
+```
+
+项目没有为手势识别新增任何后端上传接口，也不应修改 `server.cjs` 来处理视频帧。
+
+### 手势识别实现注意事项
+
+当前手势方向与逻辑：
+
+- 左挥：下一项。
+- 右挥：上一项。
+- 张开手掌：展开 / 收起讲解。
+- 握拳：收起讲解，不建议直接退出 overlay，避免误触。
+
+维护注意：
+
+- 左右挥手通过手掌中心点在一段时间内的横向位移判断。
+- 当前代码中使用 `IS_VIDEO_MIRRORED` 处理摄像头镜像预览和 MediaPipe 原始坐标之间的方向关系。
+- 如果未来发现左右方向反了，应优先调整 `IS_VIDEO_MIRRORED` 或方向映射，不要大改算法。
+- 手势识别应保留 cooldown，避免同一次手势连续触发。
+- 关闭手势识别或关闭 overlay 时，应释放摄像头 `stream tracks`。
+- 手势失败不能影响按钮和键盘兜底。
+
 ## 故宫时间轴
 
 时间轴区域已从原来的简易横向文字条，升级为横向时间轴图片展示。
@@ -193,9 +270,10 @@ url("E:\\...")
 7. 图片建筑详情页使用图片详情逻辑，不加载 3D。
 8. 文化拾遗区域使用 `/images/culture-memory/` 下的真实图片做 hover 展示。
 9. 时间轴区域使用 `/images/culture-memory/forbidden-city-timeline.png`。
-10. AI 面板向 `/api/hunyuan` 发送当前建筑、热点和上下文，由 `server.cjs` 代理调用腾讯混元。
-11. 图表区由 `PalaceDataCharts` 渲染，并包含可视化说明。
-12. 彩画专题通过页面状态进入独立专题视图。
+10. 文化拾遗手势展陈 overlay 仅在用户点击“开启手势识别”后请求摄像头权限，并由 `CultureGestureController` 在浏览器本地进行手势识别。
+11. AI 面板向 `/api/hunyuan` 发送当前建筑、热点和上下文，由 `server.cjs` 代理调用腾讯混元。
+12. 图表区由 `PalaceDataCharts` 渲染，并包含可视化说明。
+13. 彩画专题通过页面状态进入独立专题视图。
 
 ## 本地开发方式
 
@@ -223,7 +301,7 @@ npm run server
 npm run dev
 ```
 
-用于启动 Vite 前端开发服务。Vite 会把 `/api` 请求代理到 `http://127.0.0.1:3001`。
+用于启动 Vite 前端开发服务。默认访问地址通常为 `http://localhost:5173`。当前 `vite.config.ts` 中默认开发端口为 `5173`，也可通过 `VITE_DEV_PORT` 覆盖。Vite 会把 `/api` 请求代理到 `http://127.0.0.1:3001`，也可通过 `VITE_API_PROXY_TARGET` 覆盖。
 
 如果只运行 `npm run dev`，AI 请求会失败，并出现类似：
 
@@ -233,6 +311,8 @@ Error: connect ECONNREFUSED 127.0.0.1:3001
 ```
 
 这不是 AI 逻辑坏了，而是本地后端代理没有启动。线上 Node 平台部署时，`server.cjs` 可以托管构建产物并处理 `/api/hunyuan`，所以线上通常不需要像本地开发一样手动开两个终端。
+
+文化拾遗手势识别不依赖后端代理，但依赖浏览器摄像头权限。本地 `localhost` 一般允许摄像头，线上需要 HTTPS。用户未点击“开启手势识别”前不会请求摄像头。
 
 ## AI 讲解与环境变量
 
@@ -303,6 +383,7 @@ CORS_ORIGIN=
 | `src/components/AiGuidePanel.tsx` | AI 问答面板。负责请求 `/api/hunyuan`，上下文来自当前建筑、热点和页面资料；本地开发必须依赖 `npm run server` 提供代理。 |
 | `src/components/Building3DCanvas.tsx` | 只用于东北角楼。加载 `/models/corner-tower.glb`，提供 R3F Canvas、OrbitControls、灯光和热点；普通图片建筑不会挂载它；模型加载失败时应有兜底提示。 |
 | `src/components/BuildingImageHotspot.tsx` | 用于图片建筑或图文热点展示。主图懒加载，图片加载失败有兜底提示，不加载 3D 模型。 |
+| `src/components/CultureGestureController.tsx` | 只服务于“文化拾遗 · 手势展陈”overlay。负责打开摄像头、初始化 MediaPipe Hand Landmarker、检测手部关键点、判断左挥/右挥/张开手掌/握拳，并通过回调通知父组件；不控制地图、AI 或东北角楼 3D。 |
 | `src/components/HotspotDetailCards.tsx` | 展示构件说明、技术参数、文化意义等折叠内容。主要服务于东北角楼热点详情，也可支持图文详情模块。 |
 | `src/components/PalaceDataCharts.tsx` | 渲染“紫禁数读：古建筑营造密码”图表区和彩画专题页。当前包含可视化说明；图表部分用于知识结构和建筑等级关系可视化表达；部分图表不作为精确统计数据使用，不要在文档中声称所有图表都是精确统计数据。 |
 | `src/components/ErrorBoundary.tsx` | 基础错误边界，避免局部组件异常导致整页白屏。 |
@@ -402,6 +483,14 @@ CORS_ORIGIN=
 npm run build
 ```
 
+该命令执行：
+
+```bash
+tsc -b && vite build
+```
+
+Vite 会生成 `dist/` 构建产物。`dist/` 通常不需要手动提交到仓库，除非项目部署策略明确要求提交构建产物。
+
 一体化运行：
 
 ```bash
@@ -409,6 +498,108 @@ npm run start
 ```
 
 部署到支持 Node 的平台时，应设置服务端环境变量，并由 `server.cjs` 同时处理静态文件和 `/api/hunyuan`。
+
+### Render 部署
+
+Render 部署的一般链路：
+
+1. 将最新代码推送到 GitHub。
+2. Render 自动拉取最新 commit。
+3. Render 执行 Build Command。
+4. Render 执行 Start Command。
+5. `server.cjs` 托管 `dist/` 并提供 `/api/hunyuan`。
+
+Build Command 通常为：
+
+```bash
+npm install && npm run build
+```
+
+如果 Render 当前配置使用 `npm ci && npm run build`，也可以继续使用，以平台实际配置为准。
+
+Start Command 通常为：
+
+```bash
+npm run server
+```
+
+或：
+
+```bash
+npm run start
+```
+
+两者当前都会运行 `node server.cjs`。
+
+Render 上必须配置 AI 所需环境变量，尤其是 `HUNYUAN_API_KEY`、`HUNYUAN_BASE_URL`、`HUNYUAN_MODEL`。Render 使用 HTTPS，因此浏览器摄像头权限和 MediaPipe 手势识别在线上原则上可用。
+
+部署完成后访问地址以 Render Dashboard 为准。若当前服务仍使用以下地址，可用于验收：
+
+```text
+https://forbidden-city-4c.onrender.com/
+```
+
+### 构建警告说明
+
+当前 `npm run build` 可能仍出现以下历史警告：
+
+1. `.env` 中 `NODE_ENV=production` 不被 Vite 推荐。
+2. Tailwind `duration-[1.5s]` 歧义警告。
+3. chunk 体积超过 500kB。
+
+这些警告目前不阻断 `npm run build`。chunk 较大主要与 Three.js、ECharts、MediaPipe 等依赖有关。后续可通过路由懒加载、组件拆包、资源压缩继续优化；国赛前不要为了消除警告而进行大规模重构。
+
+### Lint 状态说明
+
+`npm run lint` 可能仍有历史问题，常见来源包括旧模板、shadcn 通用组件或 fast-refresh 规则。只要 `npm run build` 通过，主流程展示不一定受影响。后续可单独安排 lint 清理；国赛前不要为修 lint 大规模重构无关历史文件。
+
+如果某轮维护已经确认 lint 全量通过，应同步更新本节。
+
+### 部署后验收清单
+
+部署到 Render 后，应检查：
+
+1. 首页是否正常显示。
+2. 地图页是否正常，神武门是否未恢复。
+3. 东北角楼是否进入 3D 深度样本页。
+4. 东北角楼是否先显示静态预览，点击后加载 3D。
+5. 普通图文建筑是否不会请求 3D 模型。
+6. 文化拾遗 hover 图片是否正常。
+7. 文化拾遗手势展陈 overlay 是否正常打开。
+8. 文化拾遗按钮和键盘交互是否正常。
+9. 浏览器是否能请求摄像头权限。
+10. 左挥是否下一项，右挥是否上一项。
+11. 张开手掌是否展开 / 收起讲解。
+12. 握拳是否收起讲解且不误退出。
+13. 时间轴图片是否正常加载。
+14. 图表区是否正常显示。
+15. AI 讲解是否正常返回。
+16. 移动端是否无明显横向溢出。
+
+### GitHub 提交注意事项
+
+提交前建议运行：
+
+```bash
+npm run build
+git status
+git diff --stat
+```
+
+确认不要提交：
+
+- `.env`
+- `node_modules/`
+- 不需要提交的 `dist/`
+- 本机绝对路径
+- 未授权字体文件
+- 临时调试文件
+- 摄像头测试截图或隐私图片
+
+如果新增依赖，例如 `@mediapipe/tasks-vision`，需要提交：
+
+- `package.json`
+- `package-lock.json`
 
 ## 当前需要特别注意的点
 
@@ -421,9 +612,11 @@ npm run start
 7. 文化拾遗图片和时间轴图片应使用 `/images/culture-memory/...` 相对路径。
 8. 不要在运行时代码中写入 `E:\...`、`C:\...` 等本机绝对路径。
 9. 若使用第三方字体文件，需确认授权，尤其文件名中含“商用需授权”的字体。
-10. `src/sections/*`、`info.md` 等旧模板残留不参与当前主应用。
-11. lint 可能仍有历史问题，集中在旧模板或 shadcn 通用组件，不代表主流程无法构建。
-12. chunk 体积警告与 Three.js、ECharts 等依赖有关，后续可通过懒加载/拆包优化。
+10. 手势识别只在用户点击“开启手势识别”后请求摄像头；视频流只在浏览器本地用于识别，不上传后端。
+11. 文化拾遗手势只控制展陈 overlay，不控制地图、AI 或东北角楼 3D。
+12. `src/sections/*`、`info.md` 等旧模板残留不参与当前主应用。
+13. lint 可能仍有历史问题，集中在旧模板或 shadcn 通用组件，不代表主流程无法构建。
+14. chunk 体积警告与 Three.js、ECharts、MediaPipe 等依赖有关，后续可通过懒加载/拆包优化。
 
 ## 本次文档更新说明
 

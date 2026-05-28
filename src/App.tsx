@@ -7,6 +7,7 @@ import { BuildingImageHotspot, type ImageHotspotPick } from './components/Buildi
 import { AiGuidePanel } from './components/AiGuidePanel';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { HotspotDetailCards } from './components/HotspotDetailCards';
+import { CultureGestureController } from './components/CultureGestureController';
 import { cn } from './lib/utils';
 import './App.css';
 
@@ -665,50 +666,56 @@ const CULTURE_TIDBITS = [
   {
     title: '角楼为什么这么复杂',
     tag: '九梁传说',
-    intro: '从复杂屋顶组合中理解角楼的结构智慧与民间想象。',
+    intro: '角楼以复杂屋顶和多重脊线形成独特轮廓，民间常用“九梁十八柱，七十二条脊”形容它的精巧与繁复。',
     tags: ['角楼结构', '九梁十八柱', '屋顶组合'],
     image: '/images/culture-memory/corner-tower-roof.jpg',
     body: '民间常用“九梁十八柱，七十二条脊”形容角楼，并不一定是精确构件计数，而是在说它的屋顶脊线繁复、转角精巧，远看像一座被展开的金色机关。',
+    detail: '紫禁城城墙四角各有一座角楼，既服务于城垣空间的转角防护，也承担了强烈的视觉标识作用。角楼屋顶由多层檐面和转角脊线组合而成，远看像一座展开的金色机关。所谓“九梁十八柱，七十二条脊”并不一定是精确构件统计，更像是民间对其复杂结构和营造智慧的形象概括。',
   },
   {
     title: '门钉不只是装饰',
     tag: '宫门细节',
-    intro: '从门钉、铺首和门环中看见宫门的结构与仪式感。',
-    tags: ['宫门制度', '门钉', '空间仪式'],
+    intro: '宫门上的门钉、铺首和门环不只是装饰，它们把结构加固、出入秩序和礼制象征凝聚在一扇门上。',
+    tags: ['门钉', '铺首', '宫门礼制'],
     image: '/images/culture-memory/palace-door-nails.jpg',
     body: '故宫大门上的门钉、铺首和门环会让人先感到“重”。这些细节既强化门扇结构，也把出入宫城这件事变成一种有仪式感的空间体验。',
+    detail: '门钉最初与板门加固有关，后来露在外部的钉帽被处理成整齐的装饰形态，成为宫门视觉秩序的一部分。铺首和门环则让“开门”这个动作带有更强的仪式感，也常被赋予镇护、吉祥等象征意义。对于紫禁城这样的宫廷建筑来说，门不仅是空间边界，也是身份、等级和秩序的入口。',
   },
   {
     title: '红墙黄瓦的辨识度',
     tag: '色彩记忆',
-    intro: '从红墙与黄琉璃瓦中识别宫城建筑的等级和气质。',
-    tags: ['红墙黄瓦', '皇家色彩', '建筑等级'],
+    intro: '红墙、黄瓦、青绿彩画和白色台基共同构成故宫最鲜明的视觉记忆，也让建筑等级与空间边界一眼可辨。',
+    tags: ['红墙黄瓦', '皇家色彩', '视觉秩序'],
     image: '/images/culture-memory/red-wall-yellow-tiles.jpg',
     body: '红墙与黄琉璃瓦几乎成了故宫的视觉符号。它不只是“好看”，也让观众能迅速分辨宫城建筑的等级、边界和整体气质。',
+    detail: '故宫建筑的色彩并非单纯为了“好看”，而是通过黄琉璃瓦、朱红门窗、青绿彩画和白色台基形成强烈而稳定的视觉秩序。黄色屋顶强化皇家建筑的等级感，红墙与宫门划分出庄重的空间边界，檐下彩画则在阴影中补充细密的装饰层次。正是这些颜色的组合，让故宫在远观和近看时都具有高度辨识度。',
   },
   {
     title: '瑞兽守在屋脊上',
     tag: '屋脊故事',
-    intro: '从屋脊瑞兽中理解构造收边、礼制秩序与守护想象。',
-    tags: ['屋脊瑞兽', '吻兽走兽', '镇火避灾'],
+    intro: '屋脊上的走兽既是屋顶构造的装饰收束，也逐渐成为建筑等级、祥瑞寓意和宫殿气势的象征。',
+    tags: ['屋脊兽', '仙人走兽', '建筑等级'],
     image: '/images/culture-memory/roof-beasts.jpg',
     body: '屋脊上的吻兽、走兽常被赋予镇火避灾、守护屋脊的寓意。它们一字排开，让屋顶既有防水收边的构造逻辑，也有神话般的想象力。',
+    detail: '故宫屋顶檐角常见走兽装饰，它们排列在垂脊、戗脊等部位，既美化屋顶转折，也强化建筑的礼制气象。走兽数量通常与建筑体量和等级有关，太和殿使用十个走兽，属于极高规格的特例。随着建筑技术发展，这些小兽逐渐超越了单纯构造意义，成为等级表达和祥瑞想象的一部分。',
   },
   {
     title: '一座城里的时间感',
     tag: '宫城日常',
-    intro: '从晨昏光影和门影变化中感受宫城的日常时间。',
-    tags: ['宫城日常', '光影', '时间感'],
+    intro: '清晨开门、暮色落墙、门影交叠，故宫的时间感不只存在于历史大事中，也藏在日常光影里。',
+    tags: ['宫门光影', '宫城日常', '空间记忆'],
     image: '/images/culture-memory/palace-daily-light.jpg',
     body: '故宫不是只在大典时存在。清晨开门、暮色落在红墙上、宫灯与门影交叠，这些日常时刻让宏大的宫城拥有更细腻的生活气息。',
+    detail: '故宫常被理解为宏大的宫殿群，但它也有非常细腻的日常面貌。阳光掠过屋檐，影子落在红墙和宫门之间，观众会在行走中感受到空间的节奏和时间的流动。今天的故宫已经从帝王宫殿转化为公共文化空间，这些日常光影也让宏大的历史变得更接近普通人的观看经验。',
   },
   {
     title: '故宫里的猫',
     tag: '今日故宫',
-    intro: '从宫猫的身影进入今日故宫更轻松、更亲近的一面。',
-    tags: ['今日故宫', '宫猫', '公众记忆'],
+    intro: '故宫里的猫让古老宫城多了一层亲近的日常叙事，也成为很多游客认识故宫的轻松入口。',
+    tags: ['故宫猫', '公共传播', '当代亲近感'],
     image: '/images/culture-memory/palace-cat.jpg',
     body: '今天的故宫里常能看到“宫猫”的身影。它们让庄严的宫殿多了一点亲近感，也成为很多游客记住故宫的轻松入口。',
+    detail: '在今天的故宫，猫常常出现在宫墙、院落和屋檐之间，成为公众熟悉的“宫城日常”符号。它们让庄严的皇家建筑多了一点生活气息，也帮助年轻观众以更轻松的方式接近故宫文化。围绕故宫猫的图像、壁纸、绘本和舞台作品，也说明故宫正在通过当代表达方式，让历史空间被更多人看见、记住和亲近。',
   },
 ] as const;
 
@@ -735,6 +742,14 @@ function CultureTidbitsSection() {
   const closeShowcase = () => {
     setIsMemoryShowcaseOpen(false);
     setIsMemoryDetailExpanded(false);
+  };
+
+  const toggleMemoryDetail = () => {
+    setIsMemoryDetailExpanded((expanded) => !expanded);
+  };
+
+  const handleFistGesture = () => {
+    setIsMemoryDetailExpanded((expanded) => (expanded ? false : expanded));
   };
 
   useEffect(() => {
@@ -841,15 +856,14 @@ function CultureTidbitsSection() {
                   ))}
                 </div>
                 <div className={`culture-showcase-detail ${isMemoryDetailExpanded ? 'is-expanded' : ''}`}>
-                  <p>{activeMemory.body}</p>
+                  <p>{activeMemory.detail}</p>
                 </div>
-                {!isMemoryDetailExpanded && (
-                  <p className="culture-showcase-summary">{activeMemory.body}</p>
-                )}
-                <div className="culture-showcase-reserve">
-                  {/* TODO: 后续接入 MediaPipe Hand Landmarker，将左挥、右挥、张开手掌、握拳映射为展陈控制动作。 */}
-                  手势识别将在下一阶段接入；当前可使用键盘与按钮体验展陈流程。
-                </div>
+                <CultureGestureController
+                  onSwipeLeft={() => goToMemory('next')}
+                  onSwipeRight={() => goToMemory('prev')}
+                  onOpenPalm={toggleMemoryDetail}
+                  onFist={handleFistGesture}
+                />
               </section>
             </main>
 
@@ -862,7 +876,7 @@ function CultureTidbitsSection() {
               <div className="culture-showcase-actions">
                 <button type="button" onClick={() => goToMemory('prev')}>上一项</button>
                 <button type="button" onClick={() => goToMemory('next')}>下一项</button>
-                <button type="button" onClick={() => setIsMemoryDetailExpanded((expanded) => !expanded)}>
+                <button type="button" onClick={toggleMemoryDetail}>
                   {isMemoryDetailExpanded ? '收起讲解' : '展开讲解'}
                 </button>
                 <button type="button" onClick={closeShowcase}>退出展陈</button>
