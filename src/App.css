@@ -1350,6 +1350,19 @@ html, body, #root {
   font-weight: 700;
 }
 
+.hotspot-progress-panel .hotspot-progress-desc,
+.hotspot-progress-panel .hotspot-calibration-note {
+  margin-top: 0;
+  color: var(--color-gray);
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.hotspot-progress-panel .hotspot-calibration-note {
+  color: #8f1c1c;
+}
+
 .detail-list {
   list-style: none;
   padding: 0;
@@ -2296,6 +2309,51 @@ html, body, #root {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.model-hotspot-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(224, 184, 83, 0.95);
+  border-radius: 999px;
+  background: rgba(143, 28, 28, 0.9);
+  color: #fff8e6;
+  padding: 0.38rem 0.62rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+}
+
+.model-hotspot-button:hover,
+.model-hotspot-button.is-active {
+  background: rgba(172, 38, 38, 0.96);
+  border-color: rgba(244, 210, 109, 1);
+  transform: translateY(-1px);
+}
+
+.model-hotspot-button.is-uncalibrated {
+  opacity: 0.82;
+  border-style: dashed;
+}
+
+.model-hotspot-dot {
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: #f4d26d;
+  box-shadow: 0 0 10px rgba(244, 210, 109, 0.7);
+}
+
+.model-hotspot-calibration {
+  border-left: 1px solid rgba(255, 248, 230, 0.28);
+  padding-left: 0.35rem;
+  color: rgba(255, 248, 230, 0.78);
+  font-size: 0.68rem;
 }
 
 /* 热点标签 */

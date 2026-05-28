@@ -5,18 +5,22 @@ import { Suspense, useLayoutEffect, useMemo, useRef } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
 
 /** 与 App 中 HotspotData 兼容的最小字段 */
-export type BuildingHotspotPick = {
+export type Building3DHotspot = {
   id: string;
-  name: string;
-  shortDesc: string;
-  position: { x: number; y: number; z?: number };
+  label: string;
+  position: [number, number, number];
+  positionLabel?: string;
+  functionSummary?: string;
+  observeTip?: string;
+  description?: string;
+  calibrated?: boolean;
 };
 
 type Building3DCanvasProps = {
   modelPath: string;
   buildingName: string;
-  hotspots: BuildingHotspotPick[];
-  onHotspotClick: (hotspot: BuildingHotspotPick) => void;
+  hotspots: Building3DHotspot[];
+  onHotspotClick: (hotspot: Building3DHotspot) => void;
   selectedHotspotId: string | null;
 };
 
@@ -45,9 +49,9 @@ function HotspotMarker({
   selected,
   onPick,
 }: {
-  hotspot: BuildingHotspotPick;
+  hotspot: Building3DHotspot;
   selected: boolean;
-  onPick: (h: BuildingHotspotPick) => void;
+  onPick: (h: Building3DHotspot) => void;
 }) {
   const ringRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
@@ -58,7 +62,7 @@ function HotspotMarker({
 
   return (
     <group
-      position={[hotspot.position.x, hotspot.position.y, hotspot.position.z ?? 0]}
+      position={hotspot.position}
       userData={{ hotspotId: hotspot.id }}
     >
       <mesh
@@ -86,18 +90,20 @@ function HotspotMarker({
         <ringGeometry args={[0.2, 0.25, 32]} />
         <meshBasicMaterial color="#d4af37" transparent opacity={0.6} side={THREE.DoubleSide} />
       </mesh>
-      <Html center distanceFactor={10} style={{ pointerEvents: 'none' }} zIndexRange={[50, 0]}>
-        <div
-          className={`hotspot-label hotspot-label--r3f ${selected ? 'active' : ''}`}
+      <Html center distanceFactor={8} style={{ pointerEvents: 'none' }} zIndexRange={[50, 0]}>
+        <button
+          type="button"
+          className={`model-hotspot-button ${selected ? 'is-active' : ''} ${hotspot.calibrated === false ? 'is-uncalibrated' : ''}`}
           style={{ pointerEvents: 'auto' }}
           onClick={(e) => {
             e.stopPropagation();
             onPick(hotspot);
           }}
         >
-          <span className="hotspot-dot" />
-          <span className="hotspot-name">{hotspot.name}</span>
-        </div>
+          <span className="model-hotspot-dot" />
+          <span>{hotspot.label}</span>
+          {hotspot.calibrated === false && <span className="model-hotspot-calibration">待校准</span>}
+        </button>
       </Html>
     </group>
   );
@@ -184,11 +190,14 @@ function ModelLoading({ buildingName }: { buildingName: string }) {
 }
 
 export function Building3DCanvas({ modelPath, buildingName, hotspots, onHotspotClick, selectedHotspotId }: Building3DCanvasProps) {
+  const displayHotspots = hotspots;
+  const hasCalibratedHotspots = displayHotspots.some((hotspot) => hotspot.calibrated !== false);
+
   return (
     <div className="building-3d-view relative h-full w-full min-h-0">
       <div className="absolute inset-0 h-full w-full min-h-[200px]">
         <ErrorBoundary
-          resetKey={`${modelPath}-${selectedHotspotId ?? 'model'}`}
+          resetKey={modelPath}
           fallback={
             <div className="model-error-state" role="alert">
               {buildingName}三维模型暂时加载失败，请刷新页面或稍后重试。
@@ -208,7 +217,7 @@ export function Building3DCanvas({ modelPath, buildingName, hotspots, onHotspotC
               <SceneContent
                 modelPath={modelPath}
                 buildingName={buildingName}
-                hotspots={hotspots}
+                hotspots={displayHotspots}
                 onHotspotClick={onHotspotClick}
                 selectedHotspotId={selectedHotspotId}
               />
@@ -218,8 +227,10 @@ export function Building3DCanvas({ modelPath, buildingName, hotspots, onHotspotC
       </div>
       <div className="view-controls pointer-events-none">
         <span className="control-hint">
-          {hotspots.length > 0
-            ? '点击金色光点查看详情 | 拖拽旋转 | 滚轮缩放'
+          {displayHotspots.length > 0
+            ? hasCalibratedHotspots
+              ? '点击金色光点查看详情 | 拖拽旋转 | 滚轮缩放'
+              : '模型热点为初始校准点，可点击查看说明并继续旋转观察。'
             : '该建筑模型热点正在校准中，可先旋转模型进行整体观察。'}
         </span>
       </div>

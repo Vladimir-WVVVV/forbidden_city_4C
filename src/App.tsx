@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ChevronRight, ArrowLeft, RotateCcw, HelpCircle, ChevronLeft } from 'lucide-react';
 import { PalaceDataChartsSection, PalacePaintingChartsPage } from './components/PalaceDataCharts';
-import { Building3DCanvas, type BuildingHotspotPick } from './components/Building3DCanvas';
+import { Building3DCanvas, type Building3DHotspot } from './components/Building3DCanvas';
 import { BuildingImageHotspot, type ImageHotspotPick } from './components/BuildingImageHotspot';
 import { AiGuidePanel } from './components/AiGuidePanel';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -43,7 +43,7 @@ interface BuildingData {
   description: string;
   detailType: '3d' | 'image' | 'placeholder';
   modelPath?: string;
-  hotspots3D?: BuildingHotspotPick[];
+  hotspots3D?: Building3DHotspot[];
   image?: string;
   mainImage?: string;
   hotspots: HotspotData[];
@@ -450,13 +450,86 @@ const qianqinggongHotspots: HotspotData[] = [
   makeImageHotspot({ id: 'qianqinggong-yuanzhuang-chenlie', name: '原状陈列', type: '近现代功能', summary: '故宫博物院开放后，乾清宫作为宫廷原状陈列空间，保留帝王生活与理政场景的历史层次。', position: { x: 35, y: 72 }, details: ['原状陈列让观众看到宝座、屏风、匾额和室内陈设之间的整体关系。', '展陈重点不是单件文物，而是宫廷空间和权力场景的复原感。', '博物馆语境下的乾清宫继续承担历史解释功能。'], technical: [{ label: '现代功能', value: '宫廷原状陈列' }, { label: '展示对象', value: '宝座、屏风、匾额、室内陈设' }, { label: '展示方式', value: '空间整体陈列' }], cultural: '原状陈列使乾清宫的寝居、理政和制度象征转化为公众可阅读的历史现场。' }),
 ];
 
+const makeCorner3DHotspot = (hotspot: HotspotData): Building3DHotspot => ({
+  id: hotspot.id,
+  label: hotspot.name,
+  position: [hotspot.position.x, hotspot.position.y, hotspot.position.z ?? 0],
+  positionLabel: hotspot.positionLabel,
+  functionSummary: hotspot.functionSummary,
+  observeTip: hotspot.observeTip,
+  description: hotspot.shortDesc,
+  calibrated: true,
+});
+
+const DEFAULT_3D_HOTSPOT_POSITIONS: [number, number, number][] = [
+  [0, 1.8, 0],
+  [0, 1.2, 0.8],
+  [-0.9, 1.1, 0],
+  [0.9, 1.1, 0],
+  [0, 0.45, 0],
+  [0, 1.5, -0.8],
+  [0.7, 0.8, 0.7],
+  [-0.7, 0.8, 0.7],
+];
+
+const CALIBRATED_3D_HOTSPOT_POSITIONS: Record<string, [number, number, number]> = {
+  'wumen-duntai-mendong': [0.3, -0.35, -0.25],
+  'wumen-zhulou': [0.095, 0.325, -1.159],
+  'wumen-yanchilou': [-1.3, 0.15, 0],
+  'wumen-queting': [1.221, 0.472, -0.995],
+  'wumen-zhongmen-yudao': [0.019, -0.668, -0.239],
+  'taihedian-san-ceng-hanbaiyu-taiji': [-0.146, -0.69, -1.099],
+  'taihedian-dianshen-shiyi-kaijian': [1.124, -0.373, -1.048],
+  'taihedian-zhongyan-wudian-ding': [-1.514, 0.24, -0.692],
+  'taihedian-dougong-tixi': [1.487, 0.438, -0.793],
+  'taihedian-yizhang-chenshe': [1.546, -0.605, 0.081],
+  'taihedian-hexicaihua': [-1.512, -0.513, -0.123],
+  'qianqinggong-neiting-zhonglu': [0.224, -0.795, 1.447],
+  'qianqinggong-yuetai-yuanluo': [-2.175, -0.75, 1.246],
+  'qianqinggong-jiujian-dianshen': [1.319, -0.537, 0.785],
+  'qianqinggong-qiju-lizheng': [0.03, -0.8, 0.549],
+  'qianqinggong-zhengda-guangming': [-0.016, 0.262, 0.822],
+  'qianqinggong-jianchu-mixia': [-0.058, 0.542, 0.866],
+  'qianqinggong-yuanzhuang-chenlie': [-1.003, -0.037, 1.22],
+  'wenhuadian-zhudian-xingzhi': [-0.144, -0.202, 0.722],
+  'wenhuadian-danyan-wudian-ding': [-2.131, 0.172, 1.045],
+  'wenhuadian-zuowen-youwu-geju': [1.131, -0.7, 0.743],
+  'wenhuadian-jingyan-jiangxue': [-1.11, 0.832, 0.017],
+  'wenhuadian-dianji-shuhua-zhancheng': [1.048, 0.803, 0.018],
+  'wuyingdian-zhudian-xingzhi': [0.017, 0.088, 0.838],
+  'wuyingdian-danyan-wudian-ding': [1.518, 1.676, -0.025],
+  'wuyingdian-dougong-liangfang': [-1.656, 0.565, 1.327],
+  'wuyingdian-junzheng-yishi': [0.9, 1.1, 0],
+  'wuyingdian-shuju': [0, 0.45, 0],
+  'wuyingdian-diaoban-yinshua-gongyi': [0, 1.5, -0.8],
+};
+
+const makeImageHotspots3D = (hotspots: HotspotData[]): Building3DHotspot[] => hotspots.map((hotspot, index) => ({
+  id: hotspot.id,
+  label: hotspot.name,
+  position: CALIBRATED_3D_HOTSPOT_POSITIONS[hotspot.id] ?? DEFAULT_3D_HOTSPOT_POSITIONS[index % DEFAULT_3D_HOTSPOT_POSITIONS.length],
+  positionLabel: hotspot.positionLabel ?? hotspot.type ?? hotspot.name,
+  functionSummary: hotspot.functionSummary ?? hotspot.content.description ?? hotspot.shortDesc,
+  observeTip: hotspot.observeTip ?? '旋转模型，结合图文说明观察该构件位置。',
+  description: hotspot.content.description,
+  calibrated: Boolean(CALIBRATED_3D_HOTSPOT_POSITIONS[hotspot.id]),
+}));
+
+const BUILDING_3D_HOTSPOTS: Record<string, Building3DHotspot[]> = {
+  wumen: makeImageHotspots3D(wumenHotspots),
+  taihe_dian: makeImageHotspots3D(taihedianHotspots),
+  qianqing_gong: makeImageHotspots3D(qianqinggongHotspots),
+  wenhua_dian: makeImageHotspots3D(wenhuadianHotspots),
+  wuying_dian: makeImageHotspots3D(wuyingdianHotspots),
+  corner_tower: cornerTowerHotspots.map(makeCorner3DHotspot),
+};
 const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wumen: {
     id: 'wumen',
     name: '午门',
     detailType: '3d',
     modelPath: '/models/wumen.glb',
-    hotspots3D: [],
+    hotspots3D: BUILDING_3D_HOTSPOTS.wumen,
     subtitle: '皇权入口与五凤楼形制',
     description: '紫禁城正门',
     image: '/images/wumen-zhutu.jpg',
@@ -472,7 +545,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     name: '太和殿',
     detailType: '3d',
     modelPath: '/models/taihedian.glb',
-    hotspots3D: [],
+    hotspots3D: BUILDING_3D_HOTSPOTS.taihe_dian,
     subtitle: '外朝核心与最高礼制建筑',
     description: '明清举行大典的场所',
     image: buildingImage('taihedian-zhutu.jpg'),
@@ -488,7 +561,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     name: '乾清宫',
     detailType: '3d',
     modelPath: '/models/qianqinggong.glb',
-    hotspots3D: [],
+    hotspots3D: BUILDING_3D_HOTSPOTS.qianqing_gong,
     subtitle: '内廷后三宫之首',
     description: '皇帝寝宫与理政空间',
     image: buildingImage('qianqinggong-zhutu.jpg'),
@@ -504,7 +577,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     name: '武英殿',
     detailType: '3d',
     modelPath: '/models/wuyingdian.glb',
-    hotspots3D: [],
+    hotspots3D: BUILDING_3D_HOTSPOTS.wuying_dian,
     subtitle: '外朝西路殿宇',
     description: '西路文献与典籍空间',
     image: buildingImage('wuyingdian-zhutu.jpg'),
@@ -520,7 +593,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     name: '文华殿',
     detailType: '3d',
     modelPath: '/models/wenhuadian.glb',
-    hotspots3D: [],
+    hotspots3D: BUILDING_3D_HOTSPOTS.wenhua_dian,
     subtitle: '外朝东路殿宇',
     description: '东路典学空间',
     image: buildingImage('wenhuadian-zhutu.jpg'),
@@ -536,7 +609,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     name: '东北角楼',
     detailType: '3d',
     modelPath: '/models/corner-tower.glb',
-    hotspots3D: cornerTowerHotspots,
+    hotspots3D: BUILDING_3D_HOTSPOTS.corner_tower,
     subtitle: '九梁十八柱七十二条脊',
     description: '紫禁城城池防卫设施',
     image: '/images/corner-tower.jpg',
@@ -1142,6 +1215,7 @@ function DetailPage({
   const [deepZoneVisible, setDeepZoneVisible] = useState(false);
   const [exploredHotspotIds, setExploredHotspotIds] = useState<Set<string>>(() => new Set());
   const [modelActive, setModelActive] = useState(false);
+  const [selected3DHotspotId, setSelected3DHotspotId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDetailExpanded = viewMode === 'detail';
   const hasModel = Boolean(building.modelPath);
@@ -1150,6 +1224,7 @@ function DetailPage({
   const isPlaceholder = building.detailType === 'placeholder';
   const hotspotPresentation = HOTSPOT_PRESENTATION_BY_BUILDING[building.id] ?? HOTSPOT_PRESENTATION_BY_BUILDING.corner_tower;
   const selectedHotspotIndex = selectedHotspot ? building.hotspots.findIndex((hotspot) => hotspot.id === selectedHotspot.id) : -1;
+  const selected3DHotspot = selected3DHotspotId ? modelHotspots.find((hotspot) => hotspot.id === selected3DHotspotId) ?? null : null;
   const selectedHotspotReading = selectedHotspot ? getHotspotReading(selectedHotspot) : null;
   const overviewAiContext = [
     building.subtitle,
@@ -1205,22 +1280,26 @@ function DetailPage({
       setDeepZoneVisible(false);
       setExploredHotspotIds(new Set());
       setModelActive(false);
+      setSelected3DHotspotId(null);
     });
     return () => cancelAnimationFrame(id);
   }, [building.id, building.hotspots]);
 
-  const handleHotspotClick = (hotspot: BuildingHotspotPick | ImageHotspotPick) => {
+  const handleHotspotClick = (hotspot: Building3DHotspot | ImageHotspotPick | HotspotData) => {
     const full = building.hotspots.find((h) => h.id === hotspot.id);
     if (!full) return;
     setSelectedHotspot(full);
     setViewMode('detail');
     if (hasModel) {
+      const modelHotspot = modelHotspots.find((h) => h.id === hotspot.id);
+      setSelected3DHotspotId(modelHotspot?.id ?? null);
       setExploredHotspotIds((current) => new Set(current).add(full.id));
     }
   };
 
   const handleBackToOverview = () => {
     setViewMode('overview');
+    setSelected3DHotspotId(null);
     setDeepZoneVisible(false);
     setTimeout(() => setSelectedHotspot(building.hotspots[0] ?? null), 300);
   };
@@ -1387,20 +1466,26 @@ function DetailPage({
                       <div className="hotspot-progress-panel">
                         <div>
                           <span>当前识读对象</span>
-                          <strong>{selectedHotspot.name}</strong>
+                          <strong>{selected3DHotspot?.label ?? selectedHotspot.name}</strong>
                         </div>
                         <div>
                           <span>所在位置</span>
-                          <strong>{selectedHotspot.positionLabel ?? '三维模型构件'}</strong>
+                          <strong>{selected3DHotspot?.positionLabel ?? selectedHotspot.positionLabel ?? '三维模型构件'}</strong>
                         </div>
                         <div>
                           <span>功能作用</span>
-                          <strong>{selectedHotspot.functionSummary ?? selectedHotspot.shortDesc}</strong>
+                          <strong>{selected3DHotspot?.functionSummary ?? selectedHotspot.functionSummary ?? selectedHotspot.shortDesc}</strong>
                         </div>
                         <div>
                           <span>观察提示</span>
-                          <strong>{selectedHotspot.observeTip ?? '请旋转模型，从整体层次中定位该构件'}</strong>
+                          <strong>{selected3DHotspot?.observeTip ?? selectedHotspot.observeTip ?? '请旋转模型，从整体层次中定位该构件'}</strong>
                         </div>
+                        {selected3DHotspot?.description && (
+                          <p className="hotspot-progress-desc">{selected3DHotspot.description}</p>
+                        )}
+                        {selected3DHotspot?.calibrated === false && (
+                          <p className="hotspot-calibration-note">该热点坐标为初始校准点，后续可根据模型细节继续微调。</p>
+                        )}
                         <p>已探索 {exploredHotspotIds.size} / {building.hotspots.length} 个构件</p>
                       </div>
                     )}
@@ -1508,7 +1593,7 @@ function DetailPage({
                 buildingName={building.name}
                 hotspots={modelHotspots}
                 onHotspotClick={handleHotspotClick}
-                selectedHotspotId={selectedHotspot?.id ?? null}
+                selectedHotspotId={selected3DHotspotId}
               />
             ) : isImageDetail ? (
               <BuildingImageHotspot
