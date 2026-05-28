@@ -647,11 +647,6 @@ function IntroPage({ onEnter }: { onEnter: () => void }) {
           <span>开启故宫建筑之旅</span>
           <ChevronRight className="button-icon" />
         </button>
-        <div className="intro-highlights" aria-label="项目核心亮点">
-          {['三维构件识读', '紫禁城空间导览', '古建筑数据可视化', 'AI 智能讲解'].map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </div>
       </div>
       <div className="intro-footer">
         <div className="footer-left">

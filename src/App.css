@@ -75,9 +75,9 @@ html, body, #root {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.6) 100%
+    rgba(0, 0, 0, 0.32) 0%,
+    rgba(0, 0, 0, 0.46) 48%,
+    rgba(0, 0, 0, 0.58) 100%
   );
   z-index: 1;
 }
@@ -88,35 +88,42 @@ html, body, #root {
   text-align: center;
   color: white;
   padding: 2rem;
+  transform: translateY(36px);
 }
 
 .intro-title {
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 700;
-  letter-spacing: 0.5em;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(135deg, #fff 0%, var(--color-gold-light) 100%);
+  font-family: "STXingkai", "华文行楷", "Kaiti SC", "KaiTi", "楷体", "FangSong", "仿宋", serif;
+  font-size: clamp(3.6rem, 8vw, 7rem);
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  margin-bottom: 1.35rem;
+  text-indent: 0.28em;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.48), 0 1px 0 rgba(255, 255, 255, 0.22);
+  background: linear-gradient(135deg, #fff8dc 0%, #f7df8b 46%, #ffffff 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .intro-subtitle {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  letter-spacing: 0.3em;
-  margin-bottom: 1rem;
-  opacity: 0.9;
-  color: var(--color-gold-light);
+  font-family: "KaiTi", "楷体", "STKaiti", "FangSong", "仿宋", serif;
+  font-size: clamp(1.05rem, 2vw, 1.48rem);
+  letter-spacing: 0.24em;
+  margin-bottom: 1.45rem;
+  opacity: 0.92;
+  color: #f3dc9a;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
 }
 
 .intro-positioning {
-  max-width: 760px;
-  margin: 0 auto 2rem;
-  font-size: clamp(1rem, 2vw, 1.28rem);
-  line-height: 1.8;
-  color: rgba(255, 255, 255, 0.92);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  max-width: 800px;
+  margin: 0 auto 2.45rem;
+  font-family: "FangSong", "仿宋", "KaiTi", "楷体", "STKaiti", serif;
+  font-size: clamp(1rem, 1.8vw, 1.22rem);
+  line-height: 2;
+  letter-spacing: 0.08em;
+  color: rgba(255, 248, 224, 0.94);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .intro-button {
@@ -164,26 +171,6 @@ html, body, #root {
 
 .intro-button:hover .button-icon {
   transform: translateX(5px);
-}
-
-.intro-highlights {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 0.75rem;
-  margin: 1.6rem auto 0;
-  max-width: 780px;
-}
-
-.intro-highlights span {
-  border: 1px solid rgba(212, 175, 55, 0.72);
-  border-radius: 999px;
-  background: rgba(20, 12, 8, 0.42);
-  color: #fff6d8;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.92rem;
-  letter-spacing: 0.08em;
-  backdrop-filter: blur(6px);
 }
 
 .intro-footer {
@@ -2248,25 +2235,20 @@ html, body, #root {
   }
   
   .intro-title {
-    letter-spacing: 0.2em;
+    letter-spacing: 0.16em;
+    text-indent: 0.16em;
   }
 
   .intro-content {
     width: 100%;
     padding: 1.5rem 1rem;
+    transform: translateY(24px);
   }
 
   .intro-positioning {
-    margin-bottom: 1.4rem;
-  }
-
-  .intro-highlights {
-    gap: 0.5rem;
-  }
-
-  .intro-highlights span {
-    font-size: 0.78rem;
-    padding: 0.38rem 0.62rem;
+    margin-bottom: 1.7rem;
+    letter-spacing: 0.04em;
+    line-height: 1.85;
   }
   
   .intro-button {
