@@ -808,6 +808,115 @@ const CULTURE_TIDBITS = [
   },
 ] as const;
 
+// 内容依据故宫博物院公开资料、故宫建筑导览与清宫历史相关资料整理。
+const PALACE_HUMANITIES = [
+  {
+    id: 'grand-ritual',
+    index: 'ARCHIVE 01',
+    title: '大朝礼仪',
+    location: '太和殿 / 外朝',
+    keywords: ['典礼', '外朝', '国家秩序'],
+    intro: '太和殿不是日常办公处，而是国家礼仪被集中呈现的空间。',
+    detail: '紫禁城外朝以太和殿、中和殿、保和殿为核心，是国家大典与礼仪秩序展开的场所。太和殿作为外朝核心建筑，常被理解为皇权威仪最集中的舞台。它的空间开阔、台基高耸、轴线鲜明，让礼仪本身成为一种可被观看的秩序。',
+  },
+  {
+    id: 'grand-council-night',
+    index: 'ARCHIVE 02',
+    title: '军机夜值',
+    location: '军机处 / 养心殿周边',
+    keywords: ['政务', '奏折', '权力中枢'],
+    intro: '军机处从临时军务机构发展为清代处理军政大事的重要中枢。',
+    detail: '军机处最初与雍正年间西北用兵有关，后来逐渐成为清代处理全国军政大事的核心机构。它靠近皇帝日常起居与批阅奏折的空间，使政务处理更迅速、更机密。小小的值房背后，是清代国家机器高度集中运转的一面。',
+  },
+  {
+    id: 'upright-bright',
+    index: 'ARCHIVE 03',
+    title: '正大光明',
+    location: '乾清宫',
+    keywords: ['匾额', '继承', '内廷政治'],
+    intro: '一块匾额背后，连接着皇权、继承制度与内廷空间的政治象征。',
+    detail: '乾清宫位于内廷中路，是明清宫廷政治与生活的重要空间。“正大光明”匾不仅是殿内陈设，也承载了公众熟悉的清代秘密立储叙事。它让一个建筑细节成为理解皇权继承制度和内廷政治秩序的入口。',
+  },
+  {
+    id: 'palace-exam',
+    index: 'ARCHIVE 04',
+    title: '殿试取士',
+    location: '保和殿 / 科举制度',
+    keywords: ['科举', '士人', '国家治理'],
+    intro: '宫殿不仅承载礼仪，也曾成为士人进入国家治理体系的终点考场。',
+    detail: '科举制度将个人学业、国家选官和皇权秩序连接在一起。殿试作为科举流程中的重要环节，使士人的仕途选择与宫廷空间发生直接关联。对于紫禁城来说，宫殿不只是帝王活动的背景，也是制度运行和人才选拔的场所。',
+  },
+  {
+    id: 'daily-palace',
+    index: 'ARCHIVE 05',
+    title: '宫中日用',
+    location: '内廷 / 宫廷生活',
+    keywords: ['饮食', '值役', '日常运转'],
+    intro: '紫禁城不只有大典与皇帝，也有饮食、值役、洒扫与日常运转。',
+    detail: '宏大的宫殿群需要大量人员维持日常运行：饮食、洒扫、传递、值守、陈设和修缮都构成宫廷生活的一部分。宫廷宴享、膳食供应和宫人服役让紫禁城不仅是权力空间，也是高度制度化的生活空间。正是这些日常环节，使宫城能够持续运转。',
+  },
+  {
+    id: 'palace-to-museum',
+    index: 'ARCHIVE 06',
+    title: '从宫殿到博物馆',
+    location: '故宫博物院',
+    keywords: ['1925', '开放', '公共文化'],
+    intro: '1925 年故宫博物院成立，昔日皇宫转化为面向公众开放的文化空间。',
+    detail: '故宫博物院建立在明清两朝皇宫紫禁城的基础上。随着宫殿大门向公众敞开，紫禁城从帝王居所转化为博物馆与文化遗产现场。今天的故宫不仅保存建筑和文物，也承担着研究、展示、教育和公共文化传播的功能。',
+  },
+] as const;
+
+function PalaceHumanitiesSection() {
+  const [expandedArchiveId, setExpandedArchiveId] = useState<string | null>(PALACE_HUMANITIES[0].id);
+
+  return (
+    <section className="humanities-section" aria-labelledby="humanities-heading">
+      <div className="humanities-heading">
+        <div>
+          <span className="section-kicker">PALACE HUMANITIES</span>
+          <h2 id="humanities-heading">宫城人文志</h2>
+        </div>
+        <p>从礼仪、政务、科举与日常生活中，读懂紫禁城作为历史现场的另一面。</p>
+      </div>
+
+      <div className="humanities-archive-grid">
+        {PALACE_HUMANITIES.map((archive) => {
+          const expanded = expandedArchiveId === archive.id;
+          return (
+            <article key={archive.id} className={`humanities-archive-card ${expanded ? 'is-expanded' : ''}`}>
+              <div className="humanities-seal" aria-hidden="true">志</div>
+              <span className="humanities-index">{archive.index}</span>
+              <div className="humanities-card-main">
+                <span className="humanities-location">{archive.location}</span>
+                <h3>{archive.title}</h3>
+                <div className="humanities-keywords" aria-label="关键词">
+                  {archive.keywords.map((keyword) => (
+                    <span key={keyword}>{keyword}</span>
+                  ))}
+                </div>
+                <p className="humanities-intro">{archive.intro}</p>
+                <div className="humanities-detail" aria-hidden={!expanded}>
+                  <p>{archive.detail}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="humanities-toggle"
+                aria-expanded={expanded}
+                onClick={() => setExpandedArchiveId((current) => (current === archive.id ? null : archive.id))}
+              >
+                {expanded ? '收起札记' : '展开札记'}
+              </button>
+            </article>
+          );
+        })}
+      </div>
+
+      <p className="humanities-source-note">内容依据故宫博物院公开资料及清宫历史相关研究整理，用于辅助理解宫城人文脉络。</p>
+    </section>
+  );
+}
+
 function CultureTidbitsSection() {
   const [isMemoryShowcaseOpen, setIsMemoryShowcaseOpen] = useState(false);
   const [activeMemoryIndex, setActiveMemoryIndex] = useState(0);
@@ -907,6 +1016,8 @@ function CultureTidbitsSection() {
             </article>
           ))}
         </div>
+
+        <PalaceHumanitiesSection />
 
         <figure className="culture-timeline">
           <span>FORBIDDEN CITY TIMELINE</span>
