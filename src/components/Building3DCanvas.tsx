@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Html, OrbitControls, useGLTF } from '@react-three/drei';
 import { Suspense, useLayoutEffect, useMemo, useRef } from 'react';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -34,7 +34,7 @@ function CameraAspectSync() {
       camera.aspect = size.width / h;
       camera.updateProjectionMatrix();
     }
-    gl.setPixelRatio(Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 2));
+    gl.setPixelRatio(Math.min(typeof window !== 'undefined' ? window.devicePixelRatio : 1, 1.5));
   }, [camera, size.width, size.height, gl]);
 
   return null;
@@ -52,13 +52,9 @@ function HotspotMarker({
   const ringRef = useRef<THREE.Mesh>(null);
   const { camera } = useThree();
 
-  useFrame((state) => {
-    const ring = ringRef.current;
-    if (!ring) return;
-    const t = state.clock.elapsedTime;
-    ring.scale.setScalar(1 + Math.sin(t * 2) * 0.1);
-    ring.lookAt(camera.position);
-  });
+  useLayoutEffect(() => {
+    ringRef.current?.lookAt(camera.position);
+  }, [camera]);
 
   return (
     <group
@@ -66,7 +62,6 @@ function HotspotMarker({
       userData={{ hotspotId: hotspot.id }}
     >
       <mesh
-        castShadow
         onClick={(e) => {
           e.stopPropagation();
           onPick(hotspot);
@@ -124,13 +119,6 @@ function PalaceBuilding({
     const maxAxis = Math.max(size.x, size.y, size.z) || 1;
     const normalizedScale = 4.6 / maxAxis;
 
-    clonedScene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-      }
-    });
-
     return {
       scene: clonedScene,
       scale: normalizedScale,
@@ -141,12 +129,6 @@ function PalaceBuilding({
       ),
     };
   }, [gltf.scene]);
-
-  useFrame((_, delta) => {
-    const g = buildingRef.current;
-    if (!g || selectedHotspotId) return;
-    g.rotation.y += delta * 0.35;
-  });
 
   return (
     <group ref={buildingRef}>
@@ -171,10 +153,10 @@ function SceneContent(props: Building3DCanvasProps) {
       <color attach="background" args={['#f5f0e8']} />
       <ambientLight intensity={0.85} />
       <hemisphereLight args={['#fff7df', '#8b6f55', 1.4]} />
-      <directionalLight position={[4, 5, 6]} intensity={2.3} castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+      <directionalLight position={[4, 5, 6]} intensity={1.65} />
       <directionalLight position={[-3, 3, -2]} intensity={0.55} color="#fff1c6" />
       <pointLight position={[0, 3, 4]} intensity={0.8} color="#ffd47a" />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.8, 0]}>
         <planeGeometry args={[20, 20]} />
         <meshStandardMaterial color="#e8e0d0" />
       </mesh>
@@ -213,7 +195,8 @@ export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }
           }
         >
           <Canvas
-            shadows
+            frameloop="demand"
+            dpr={[1, 1.5]}
             className="block h-full w-full"
             style={{ width: '100%', height: '100%' }}
             camera={{ position: [4, 2.8, 5.4], fov: 55, near: 0.1, far: 1000 }}

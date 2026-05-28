@@ -1,21 +1,24 @@
 # 紫禁营造志项目文件导览
 
-本文档用于帮助后续 AI、开发者和参赛队友快速理解当前项目结构、运行方式、核心文件职责和国赛展示逻辑。
+本文档用于帮助后续 AI、开发者和参赛队友快速理解当前项目结构、运行方式、核心文件职责和国赛展示逻辑。本文档只描述当前主应用状态，不应把旧模板残留误认为当前展示功能。
 
 ## 项目概览
 
 “紫禁营造志”是一个以紫禁城建筑细节交互为主题的单页 Web 应用，面向计算机设计大赛国赛展示。项目采用“重点样本深度识读 + 多建筑图文导览 + 专题可视化扩展 + AI 辅助讲解”的结构。
 
-当前内容结构：
+当前页面与功能包括：
 
-- 首页：展示项目主题、项目定位语“从一座城，到一处构件：用交互可视化读懂紫禁城营造智慧。”和四个核心亮点标签。
-- 地图页：使用本地故宫导览图，展示建筑点位、资料来源、推荐演示路线。
-- 东北角楼：当前唯一 3D 深度探索样本，支持三维模型、热点识读、线稿/实景对照、AI 讲解。
+- 首页：展示项目主题、项目定位语、古典字体风格和“开启故宫建筑之旅”入口按钮。
+- 地图页：使用本地故宫导览图展示建筑点位、资料来源和推荐演示路线。
+- 东北角楼：当前唯一 3D 深度探索样本，支持静态预览、点击加载三维模型、热点识读、线稿/实景对照、AI 讲解。
 - 午门、太和殿、乾清宫、文华殿、武英殿：图文导览建筑，展示主图、基础介绍、空间功能和文化意义。
-- 神武门：当前不再展示地图点位，之前的 placeholder 示例已删除。
-- 图表区：“紫禁数读：古建筑营造密码”，展示古建筑营造、木材、屋顶、彩画等专题可视化。
+- 文化拾遗：展示宫廷建筑细节、屋脊瑞兽、故宫猫等文化补充内容，卡片 hover 时显示对应真实图片。
+- 故宫时间轴：使用横向时间轴图片展示故宫重要历史节点。
+- 紫禁数读：展示古建筑营造、木材、屋顶、彩画等专题可视化。
 - 彩画专题：作为专题知识扩展页面。
-- AI 讲解：前端请求 `/api/hunyuan`，由本地或线上 Express 代理调用腾讯混元兼容接口。
+- AI 讲解：前端请求 `/api/hunyuan`，由 Express 后端代理调用腾讯混元接口。
+
+神武门点位已经删除，当前地图不展示神武门。`placeholder` 类型逻辑可以存在，但当前没有通过神武门暴露“建设中”入口。
 
 ## 技术栈
 
@@ -24,7 +27,7 @@
 - 动画：GSAP、CSS animation
 - 3D：Three.js、@react-three/fiber、@react-three/drei
 - 图表：ECharts、echarts-for-react
-- 后端代理：Express、dotenv、cors、TokenHub/OpenAI-compatible 混元接口
+- 后端代理：Express、dotenv、cors、腾讯混元兼容接口
 
 ## 建筑类型与详情页逻辑
 
@@ -38,7 +41,7 @@ detailType: "3d" | "image" | "placeholder"
 
 | 建筑 | detailType | 展示方式 |
 | --- | --- | --- |
-| 东北角楼 | `3d` | 3D 模型、热点识读、线稿/实景对照、AI 讲解 |
+| 东北角楼 | `3d` | 静态预览、点击加载 3D 模型、热点识读、线稿/实景对照、AI 讲解 |
 | 午门 | `image` | 图文导览 |
 | 太和殿 | `image` | 图文导览 |
 | 乾清宫 | `image` | 图文导览 |
@@ -47,29 +50,156 @@ detailType: "3d" | "image" | "placeholder"
 
 重要说明：
 
-- 只有 `detailType === "3d"` 时才挂载 `Building3DCanvas`。
+- 只有 `detailType === "3d"` 时才可能挂载 `Building3DCanvas`。
 - 只有东北角楼会加载 `/models/corner-tower.glb`。
-- 图片建筑不会请求 `corner-tower.glb`。
-- placeholder 类型逻辑可以保留，但当前地图不展示神武门入口。
+- 普通图片建筑不会请求 `corner-tower.glb`。
+- 神武门 placeholder 已删除，不再展示在地图上。
 - 不要把所有建筑误写成 3D 模型展示。
+
+## 首页视觉说明
+
+首页已进行国赛前视觉优化，相关实现主要在 `src/App.tsx` 和 `src/App.css`：
+
+- 删除了原先的四个亮点卡片。
+- 主标题采用更有书法、行楷、民艺感的字体风格。
+- 小标题、定位语和按钮文字风格统一。
+- 内容整体下移，增强留白和展陈感。
+- 按钮仍然作为进入地图页的主操作。
+- 不应恢复四个亮点卡片。
+
+当前首页字体使用系统字体栈，例如 `"STXingkai"`、`"华文行楷"`、`"KaiTi"`、`"楷体"`、`"FangSong"`、`"仿宋"`、`serif`，运行时代码没有引用本机字体绝对路径。仓库中如存在字体素材文件，尤其文件名含“商用需授权”的字体，使用前必须确认授权；不要把本机字体路径写入代码或文档中的运行时引用示例。
+
+## 3D 模型加载说明
+
+东北角楼是当前唯一 3D 深度样本。为降低详情页初始渲染压力，3D 区域先显示静态预览图；用户点击“进入 3D 识读”等按钮后，才挂载 `Building3DCanvas` 并加载 `/models/corner-tower.glb`。
+
+这样可以避免进入东北角楼详情页时立即触发 3D 渲染。`useGLTF.preload` 不应恢复，避免普通浏览阶段提前请求模型。普通图片建筑不会加载 3D 模型。
+
+静态预览提示语中类似“先浏览静态图，点击后再加载三维模型，降低详情页初始渲染压力。”的解释性文案已删除，不应恢复。模型加载失败时应有友好兜底提示，例如提示“三维模型暂时加载失败，请刷新页面或稍后重试”。
+
+## 文化拾遗
+
+文化拾遗区域用于补充展示故宫建筑与宫城日常相关的文化细节，包括：
+
+- 九梁传说：角楼为什么这么复杂
+- 宫门细节：门钉不只是装饰
+- 色彩记忆：红墙黄瓦的辨识度
+- 屋脊故事：瑞兽守在屋脊上
+- 宫城日常：一座城里的时间感
+- 今日故宫：故宫里的猫
+
+该区域已接入六张真实图片，图片存放在：
+
+```text
+public/images/culture-memory/
+```
+
+前端引用必须使用：
+
+```text
+/images/culture-memory/xxx.jpg
+```
+
+六张图片路径：
+
+```text
+/images/culture-memory/corner-tower-roof.jpg
+/images/culture-memory/palace-door-nails.jpg
+/images/culture-memory/red-wall-yellow-tiles.jpg
+/images/culture-memory/roof-beasts.jpg
+/images/culture-memory/palace-daily-light.jpg
+/images/culture-memory/palace-cat.jpg
+```
+
+说明：
+
+- hover 时卡片显示对应图片。
+- 图片现在不再叠加强渐变遮罩。
+- 图片应完整、清晰可见。
+- 文字区域与图片区域应分离或保持可读。
+- 移动端无 hover 时应保持布局稳定。
+- 不要热链外站图片。
+- 不要使用 AI 生成图片替代真实素材。
+
+## 故宫时间轴
+
+时间轴区域已从原来的简易横向文字条，升级为横向时间轴图片展示。
+
+图片文件建议路径：
+
+```text
+public/images/culture-memory/forbidden-city-timeline.png
+```
+
+前端引用路径：
+
+```text
+/images/culture-memory/forbidden-city-timeline.png
+```
+
+说明：
+
+- 该图用于展示故宫重要历史节点。
+- 页面中应以图片化时间轴替代原先的 `1420 / 明清 / 今天` 简易文字横条。
+- 图片应自适应容器宽度。
+- 不应裁掉主要文字。
+- 不应叠加强白色渐变导致图片发灰。
+- 移动端应避免横向滚动。
+
+## 资源路径规范
+
+运行时代码和样式文件中不得出现本机绝对路径，例如：
+
+```text
+E:\
+C:\
+/Users/
+Font materials
+```
+
+前端 public 资源应使用如下路径：
+
+```text
+/images/...
+/models/...
+/fonts/...
+```
+
+CSS 中应使用：
+
+```css
+url("/images/xxx.jpg")
+```
+
+不要写成：
+
+```css
+url("E:\\...")
+```
+
+文档中可以说明用户本地素材准备位置，但不要把本机路径写进运行时代码。如果文档中确需说明本地素材来源，应明确“仅为本地准备路径，不应进入代码”。
 
 ## 运行链路
 
 1. `index.html` 提供根节点 `#root`。
 2. `src/main.tsx` 挂载 React 应用。
-3. `src/App.tsx` 控制核心页面状态：`intro`、`map`、`detail`、`painting`。
+3. `src/App.tsx` 控制核心页面状态，例如 `intro`、`map`、`detail`、`painting`。
 4. 首页进入地图页。
 5. 地图页点击建筑点位后，根据建筑 `detailType` 进入不同详情：
    - `3d`：东北角楼 3D 深度详情页。
    - `image`：图片图文详情页。
    - `placeholder`：建设中提示页。
-6. 东北角楼详情页挂载 `Building3DCanvas`，加载 `/models/corner-tower.glb`。
-7. 图片建筑详情页使用 `BuildingImageHotspot` 等图文逻辑，不加载 3D。
-8. AI 面板向 `/api/hunyuan` 发送当前建筑、热点和上下文，由 `server.cjs` 代理调用腾讯混元兼容接口。
-9. 图表区由 `PalaceDataCharts` 渲染，并包含可视化说明。
-10. 彩画专题通过页面状态进入独立专题视图。
+6. 东北角楼详情页先显示静态预览，点击后挂载 `Building3DCanvas` 并加载 `/models/corner-tower.glb`。
+7. 图片建筑详情页使用图片详情逻辑，不加载 3D。
+8. 文化拾遗区域使用 `/images/culture-memory/` 下的真实图片做 hover 展示。
+9. 时间轴区域使用 `/images/culture-memory/forbidden-city-timeline.png`。
+10. AI 面板向 `/api/hunyuan` 发送当前建筑、热点和上下文，由 `server.cjs` 代理调用腾讯混元。
+11. 图表区由 `PalaceDataCharts` 渲染，并包含可视化说明。
+12. 彩画专题通过页面状态进入独立专题视图。
 
-## 本地运行与常用命令
+## 本地开发方式
+
+常用命令：
 
 ```bash
 npm run dev
@@ -95,14 +225,14 @@ npm run dev
 
 用于启动 Vite 前端开发服务。Vite 会把 `/api` 请求代理到 `http://127.0.0.1:3001`。
 
-如果只运行 `npm run dev` 而没有运行 `npm run server`，AI 请求会失败，并在终端出现类似：
+如果只运行 `npm run dev`，AI 请求会失败，并出现类似：
 
 ```text
 [vite] http proxy error: /api/hunyuan
 Error: connect ECONNREFUSED 127.0.0.1:3001
 ```
 
-这不是 AI 逻辑坏了，而是本地后端代理没有启动。线上 Render 等 Node 平台部署时，`server.cjs` 会托管构建产物并处理 `/api/hunyuan`，所以线上不需要像本地一样手动开两个终端。
+这不是 AI 逻辑坏了，而是本地后端代理没有启动。线上 Node 平台部署时，`server.cjs` 可以托管构建产物并处理 `/api/hunyuan`，所以线上通常不需要像本地开发一样手动开两个终端。
 
 ## AI 讲解与环境变量
 
@@ -110,7 +240,7 @@ Error: connect ECONNREFUSED 127.0.0.1:3001
 
 `server.cjs` 是 Express 后端代理，负责读取服务端环境变量，调用腾讯混元兼容接口，并返回前端可展示的讲解文本。AI 密钥只应存在服务端 `.env` 或部署平台环境变量中，不应写入 `src`、`public` 或前端代码。本地 `.env` 不应提交到仓库。
 
-当前 `server.cjs` 实际读取的环境变量：
+当前 `server.cjs` 读取的环境变量包括：
 
 ```env
 HUNYUAN_API_KEY=your_tokenhub_api_key_here
@@ -138,13 +268,13 @@ CORS_ORIGIN=
 | `package.json` | 项目依赖、脚本和包元数据。 |
 | `package-lock.json` | npm 锁文件。 |
 | `postcss.config.js` | PostCSS 配置。 |
-| `README.md` | 当前项目说明文档。 |
-| `server.cjs` | Express 后端代理，提供 `POST /api/hunyuan`，存在 `dist` 时托管构建产物。 |
+| `README.md` | 当前项目说明文档，本轮未修改。 |
+| `server.cjs` | Express 后端代理，提供 `POST /api/hunyuan`，读取服务端环境变量调用腾讯混元，存在 `dist` 时托管构建产物；本地默认与 Vite 代理配合使用。 |
 | `tailwind.config.js` | Tailwind 配置，包含色板、字体、动画等扩展。 |
 | `tsconfig.json` | TypeScript 根配置。 |
 | `tsconfig.app.json` | 前端应用 TypeScript 配置。 |
 | `tsconfig.node.json` | Node/Vite 配置文件 TypeScript 配置。 |
-| `vite.config.ts` | Vite 配置，设置 React 插件、别名、开发端口和 `/api` 代理。 |
+| `vite.config.ts` | Vite 配置，设置 React 插件、别名、开发端口和 `/api` 代理；`/api` 会代理到本地后端，如果后端没启动会出现 `ECONNREFUSED 127.0.0.1:3001`。 |
 
 ## `docs` 目录
 
@@ -161,20 +291,20 @@ CORS_ORIGIN=
 | 文件 | 作用 |
 | --- | --- |
 | `src/main.tsx` | React 入口，引入 `index.css`，把 `App` 渲染到 `#root`。 |
-| `src/App.tsx` | 核心业务入口。负责页面状态控制、首页、地图页、详情页、彩画专题入口、建筑点位数据、建筑详情数据、`detailType` 分支、东北角楼 3D 深度样本逻辑、图片建筑图文导览逻辑、资料来源信息条和推荐演示路线。 |
-| `src/App.css` | 主要样式文件。负责首页视觉、地图点位、分类标签、hover 卡片、资料来源模块、推荐演示路线、详情页布局、3D 深度页、图片详情页和响应式布局。 |
-| `src/index.css` | 全局 CSS，导入字体、Tailwind 层和旧模板基础工具样式。 |
+| `src/App.tsx` | 核心业务入口。负责页面状态控制、首页、地图页、详情页、彩画专题入口、建筑点位数据、建筑详情数据、`detailType` 分支、东北角楼 3D 深度样本逻辑、图片建筑图文导览逻辑、文化拾遗卡片数据、故宫时间轴图片区域、资料来源信息条和推荐演示路线。 |
+| `src/App.css` | 主要样式文件。负责首页视觉、古典字体与首页排版、地图页点位、分类标签、hover 卡片、资料来源模块、推荐演示路线、详情页布局、3D 静态预览区、图片详情页样式、文化拾遗 hover 图片效果、故宫时间轴图片展示样式和响应式布局。 |
+| `src/index.css` | 全局 CSS，导入 Tailwind 层和旧模板基础工具样式。 |
 | `src/config.ts` | 原 Villa Template 集中配置。当前主 `App.tsx` 不依赖它，主要供旧 `src/sections/*` 使用。 |
 
 ## `src/components` 目录
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/components/AiGuidePanel.tsx` | AI 问答面板。负责输入问题、示例问题、请求 `/api/hunyuan`、展示混元返回结果或错误提示。上下文来自当前建筑、热点和页面资料；本地开发依赖 `npm run server` 提供代理。 |
-| `src/components/Building3DCanvas.tsx` | 只用于东北角楼。加载 `/models/corner-tower.glb`，提供 R3F Canvas、OrbitControls、灯光和热点；普通图片建筑不会挂载它；模型加载失败时有兜底提示。 |
+| `src/components/AiGuidePanel.tsx` | AI 问答面板。负责请求 `/api/hunyuan`，上下文来自当前建筑、热点和页面资料；本地开发必须依赖 `npm run server` 提供代理。 |
+| `src/components/Building3DCanvas.tsx` | 只用于东北角楼。加载 `/models/corner-tower.glb`，提供 R3F Canvas、OrbitControls、灯光和热点；普通图片建筑不会挂载它；模型加载失败时应有兜底提示。 |
 | `src/components/BuildingImageHotspot.tsx` | 用于图片建筑或图文热点展示。主图懒加载，图片加载失败有兜底提示，不加载 3D 模型。 |
 | `src/components/HotspotDetailCards.tsx` | 展示构件说明、技术参数、文化意义等折叠内容。主要服务于东北角楼热点详情，也可支持图文详情模块。 |
-| `src/components/PalaceDataCharts.tsx` | 渲染“紫禁数读：古建筑营造密码”图表区和彩画专题页。当前包含可视化说明；图表用于知识结构和建筑等级关系可视化表达，部分图表不作为精确统计数据使用。 |
+| `src/components/PalaceDataCharts.tsx` | 渲染“紫禁数读：古建筑营造密码”图表区和彩画专题页。当前包含可视化说明；图表部分用于知识结构和建筑等级关系可视化表达；部分图表不作为精确统计数据使用，不要在文档中声称所有图表都是精确统计数据。 |
 | `src/components/ErrorBoundary.tsx` | 基础错误边界，避免局部组件异常导致整页白屏。 |
 | `src/components/Preloader.tsx` | 原模板预加载组件，当前主 `App.tsx` 未使用。 |
 | `src/components/ScrollToTop.tsx` | 原模板返回顶部按钮，当前主 `App.tsx` 未使用。 |
@@ -185,7 +315,7 @@ CORS_ORIGIN=
 
 ## `src/sections` 目录
 
-这些文件来自原 Villa Template，当前主 `App.tsx` 没有导入它们。它们仍可作为历史模板参考或后续复用素材。
+这些文件来自原 Villa Template，当前主 `App.tsx` 没有导入它们。它们仍可作为历史模板参考或后续复用素材，但不参与当前主应用。
 
 | 文件 | 作用 |
 | --- | --- |
@@ -212,15 +342,23 @@ CORS_ORIGIN=
 | `public/models/corner-tower.glb` | 东北角楼三维模型，只供 `Building3DCanvas` 使用。 |
 | `public/images/custom-palace-map.png` | 地图页核心底图。 |
 | `public/images/nine-dragon-wall.jpg` | 首页背景图。 |
-| `public/images/corner-tower.jpg` | 东北角楼图像素材。 |
+| `public/images/corner-tower.jpg` | 东北角楼静态预览或图像素材。 |
 | `public/images/corner-tower-interior.jpg` | 东北角楼内部图片素材。 |
-| `public/images/xumizuo-line.png`、`public/images/xumizuo-exterior.png` | 东北角楼须弥座线稿/实景对照素材。 |
-| `public/images/wuding-line.png`、`public/images/wuding-exterior.png` | 东北角楼屋顶体系线稿/实景对照素材。 |
-| `public/images/waiqiang-exterior.png` | 东北角楼外墙实景素材。 |
+| `public/images/culture-memory/` | 文化拾遗与时间轴素材目录。 |
+| `public/images/culture-memory/corner-tower-roof.jpg` | 角楼复杂结构卡片图片。 |
+| `public/images/culture-memory/palace-door-nails.jpg` | 宫门门钉卡片图片。 |
+| `public/images/culture-memory/red-wall-yellow-tiles.jpg` | 红墙黄瓦卡片图片。 |
+| `public/images/culture-memory/roof-beasts.jpg` | 屋脊瑞兽卡片图片。 |
+| `public/images/culture-memory/palace-daily-light.jpg` | 宫城日常卡片图片。 |
+| `public/images/culture-memory/palace-cat.jpg` | 故宫猫卡片图片。 |
+| `public/images/culture-memory/forbidden-city-timeline.png` | 故宫时间轴图片。 |
 | `public/images/buildings/*` | 午门、太和殿、乾清宫、文华殿、武英殿等图文建筑主图和局部图。 |
-| `public/images/wumen-*.jpg`、`public/images/taihedian-*.jpg`、`public/images/qianqinggong-*.jpg` 等 | 建筑图文导览素材。 |
+| `public/images/wumen-*.jpg`、`public/images/taihedian-*.jpg`、`public/images/qianqinggong-*.jpg` 等 | 其他建筑图文导览素材。 |
+| `public/images/xumizuo-line.png`、`public/images/xumizuo-exterior.png` | 东北角楼须弥座线稿 / 实景对照素材。 |
+| `public/images/wuding-line.png`、`public/images/wuding-exterior.png` | 东北角楼屋顶体系线稿 / 实景对照素材。 |
+| `public/images/waiqiang-exterior.png` | 东北角楼外墙实景素材。 |
 
-注意：当前不是所有建筑都有模型。不要在文档或代码中写成“所有建筑均支持 3D”。
+注意：当前不是所有建筑都有模型。不要写“所有建筑都有模型”或“所有建筑均支持 3D”。
 
 ## 资料来源
 
@@ -241,8 +379,11 @@ CORS_ORIGIN=
 首页  
 → 地图导览  
 → 东北角楼 3D 深度探索  
+→ 点击启动三维模型  
 → 点击屋顶 / 斗栱等构件热点  
 → 查看线稿与实景对照  
+→ 查看文化拾遗  
+→ 查看故宫时间轴  
 → 返回图表区 / 进入彩画专题  
 → 使用 AI 讲解
 
@@ -275,13 +416,15 @@ npm run start
 2. 普通图片建筑不要请求 `corner-tower.glb`。
 3. 不要恢复神武门点位，除非后续确实补齐内容并确认要展示。
 4. 本地 AI 需要同时启动 `npm run server` 和 `npm run dev`。
-5. `.env` 不要提交，密钥不要写进前端代码。
+5. `.env` 不要提交。
 6. 图表数据当前包含知识结构可视化表达，不要误写为精确统计数据。
-7. `src/sections/*`、`info.md` 等旧模板残留不参与当前主应用。
-8. lint 可能仍有历史问题，集中在旧模板或 shadcn 通用组件，不代表主流程无法构建。
-9. chunk 体积警告与 Three.js、ECharts 等依赖有关，后续可通过懒加载/拆包优化。
-10. Vite 配置了 `base: './'`，构建产物适合相对路径部署。
+7. 文化拾遗图片和时间轴图片应使用 `/images/culture-memory/...` 相对路径。
+8. 不要在运行时代码中写入 `E:\...`、`C:\...` 等本机绝对路径。
+9. 若使用第三方字体文件，需确认授权，尤其文件名中含“商用需授权”的字体。
+10. `src/sections/*`、`info.md` 等旧模板残留不参与当前主应用。
+11. lint 可能仍有历史问题，集中在旧模板或 shadcn 通用组件，不代表主流程无法构建。
+12. chunk 体积警告与 Three.js、ECharts 等依赖有关，后续可通过懒加载/拆包优化。
 
 ## 本次文档更新说明
 
-本次只更新文档，不修改业务代码、图表数据、AI 逻辑、3D 逻辑或样式。Markdown 文档修改通常不影响构建，通常不需要为了文档变更单独运行 `npm run build`。
+本次只更新 `docs/project-file-guide.md`，不修改业务代码、AI、server、图表数据、地图点位、建筑详情、样式文件、资源文件或 README。Markdown 文档修改不影响构建，本轮不需要运行 build。

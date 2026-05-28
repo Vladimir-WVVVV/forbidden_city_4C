@@ -665,77 +665,74 @@ const CULTURE_TIDBITS = [
   {
     title: '角楼为什么这么复杂',
     tag: '九梁传说',
+    image: '/images/culture-memory/corner-tower-roof.jpg',
     body: '民间常用“九梁十八柱，七十二条脊”形容角楼，并不一定是精确构件计数，而是在说它的屋顶脊线繁复、转角精巧，远看像一座被展开的金色机关。',
   },
   {
     title: '门钉不只是装饰',
     tag: '宫门细节',
+    image: '/images/culture-memory/palace-door-nails.jpg',
     body: '故宫大门上的门钉、铺首和门环会让人先感到“重”。这些细节既强化门扇结构，也把出入宫城这件事变成一种有仪式感的空间体验。',
   },
   {
     title: '红墙黄瓦的辨识度',
     tag: '色彩记忆',
+    image: '/images/culture-memory/red-wall-yellow-tiles.jpg',
     body: '红墙与黄琉璃瓦几乎成了故宫的视觉符号。它不只是“好看”，也让观众能迅速分辨宫城建筑的等级、边界和整体气质。',
   },
   {
     title: '瑞兽守在屋脊上',
     tag: '屋脊故事',
+    image: '/images/culture-memory/roof-beasts.jpg',
     body: '屋脊上的吻兽、走兽常被赋予镇火避灾、守护屋脊的寓意。它们一字排开，让屋顶既有防水收边的构造逻辑，也有神话般的想象力。',
   },
   {
     title: '一座城里的时间感',
     tag: '宫城日常',
+    image: '/images/culture-memory/palace-daily-light.jpg',
     body: '故宫不是只在大典时存在。清晨开门、暮色落在红墙上、宫灯与门影交叠，这些日常时刻让宏大的宫城拥有更细腻的生活气息。',
   },
   {
     title: '故宫里的猫',
     tag: '今日故宫',
+    image: '/images/culture-memory/palace-cat.jpg',
     body: '今天的故宫里常能看到“宫猫”的身影。它们让庄严的宫殿多了一点亲近感，也成为很多游客记住故宫的轻松入口。',
   },
 ] as const;
 
 function CultureTidbitsSection() {
   return (
-    <section className="w-full border-y border-[#CDBA96]/80 bg-[#f8f4e8] px-4 py-12 sm:px-6 lg:px-10" aria-labelledby="culture-tidbits-heading">
-      <div className="mx-auto max-w-[1500px] rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/70 p-5 shadow-sm sm:p-7">
-        <div className="mb-9 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+    <section className="culture-tidbits-section" aria-labelledby="culture-tidbits-heading">
+      <div className="culture-tidbits-inner">
+        <div className="section-heading palace-heading">
           <div>
-            <p className="text-sm font-semibold tracking-[0.28em] text-[#8B2323]">PALACE MEMORY</p>
-            <h2 id="culture-tidbits-heading" className="mt-2 font-serif text-3xl font-semibold text-[#1A1A1A] md:text-4xl">
+            <span className="section-kicker">PALACE MEMORY</span>
+            <h2 id="culture-tidbits-heading">
               文化拾遗
             </h2>
           </div>
-          <p className="max-w-2xl text-sm leading-7 text-[#1A1A1A]/75">
+          <p>
             从角楼传说、屋脊瑞兽到门钉和宫猫，故宫的文化记忆不只存在于宏大的宫殿中，也藏在可被观看、触发和讲述的细节里。
           </p>
         </div>
 
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {CULTURE_TIDBITS.map((item) => (
-            <article key={item.title} className="flex min-h-56 flex-col rounded-lg border border-[#CDBA96] bg-white/75 p-5 shadow-sm">
-              <span className="w-fit rounded-sm bg-[#8B2323] px-3 py-1 text-xs font-medium tracking-[0.16em] text-[#F4F1E1]">{item.tag}</span>
-              <h3 className="mt-5 text-xl font-semibold text-[#8B2323]">{item.title}</h3>
-              <p className="mt-3 flex-1 text-sm leading-7 text-[#1A1A1A]/78">{item.body}</p>
+            <article key={item.title} className="culture-tidbit-card">
+              <img src={item.image} alt="" className="culture-tidbit-image" loading="lazy" aria-hidden="true" />
+              <div className="culture-tidbit-content">
+                <span className="culture-tidbit-tag">{item.tag}</span>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </div>
             </article>
           ))}
         </div>
 
-        <div className="mt-8 rounded-lg border border-[#CDBA96] bg-[#faf6ec] p-5 shadow-inner">
-          <div className="grid gap-4 text-sm leading-7 text-[#1A1A1A]/78 md:grid-cols-3">
-            <p>
-              <strong className="text-[#8B2323]">1420：</strong>
-              紫禁城建成，宫城格局、中轴秩序和城防体系共同奠定故宫空间骨架。
-            </p>
-            <p>
-              <strong className="text-[#8B2323]">明清：</strong>
-              宫殿修缮、彩画更新和木构维护不断延续，使建筑在使用中保留礼制记忆。
-            </p>
-            <p>
-              <strong className="text-[#8B2323]">今天：</strong>
-              故宫从皇家宫城转化为博物院，建筑、文物和城市记忆成为公众共享的文化现场。
-            </p>
-          </div>
-        </div>
+        <figure className="culture-timeline">
+          <span>FORBIDDEN CITY TIMELINE</span>
+          <img src="/images/culture-memory/forbidden-city-timeline.png" alt="故宫时间轴" loading="lazy" />
+        </figure>
       </div>
     </section>
   );
@@ -977,6 +974,7 @@ function DetailPage({
   const [viewMode, setViewMode] = useState<'overview' | 'detail'>('overview');
   const [deepZoneVisible, setDeepZoneVisible] = useState(false);
   const [exploredHotspotIds, setExploredHotspotIds] = useState<Set<string>>(() => new Set());
+  const [modelActive, setModelActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDetailExpanded = viewMode === 'detail';
   const hasModel = building.detailType === '3d';
@@ -1036,6 +1034,7 @@ function DetailPage({
       setViewMode('overview');
       setDeepZoneVisible(false);
       setExploredHotspotIds(new Set());
+      setModelActive(false);
     });
     return () => cancelAnimationFrame(id);
   }, [building.id, building.hotspots]);
@@ -1321,7 +1320,19 @@ function DetailPage({
           )}
         >
           <div className="absolute inset-0 h-full w-full min-h-0">
-            {hasModel ? (
+            {hasModel && !modelActive ? (
+              <div className="model-preview">
+                <img src={building.mainImage ?? building.image ?? '/images/corner-tower.jpg'} alt={building.name} loading="eager" />
+                <div className="model-preview-shade" />
+                <div className="model-preview-copy">
+                  <span>3D DEPTH SAMPLE</span>
+                  <h2>{building.name}</h2>
+                  <button type="button" onClick={() => setModelActive(true)}>
+                    进入 3D 识读
+                  </button>
+                </div>
+              </div>
+            ) : hasModel ? (
               <Building3DCanvas hotspots={building.hotspots} onHotspotClick={handleHotspotClick} selectedHotspotId={selectedHotspot?.id ?? null} />
             ) : isImageDetail ? (
               <BuildingImageHotspot

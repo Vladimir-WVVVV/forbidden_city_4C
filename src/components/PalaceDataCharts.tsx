@@ -741,14 +741,14 @@ export function PalaceDataChartsSection({ onOpenPainting }: { onOpenPainting?: (
       aria-labelledby="palace-viz-heading"
     >
       <div className="mx-auto max-w-[1600px] rounded-lg border border-[#CDBA96]/70 bg-[#fffaf0]/65 p-5 shadow-sm sm:p-7">
-        <header className="mb-10 text-center">
-          <h2
-            id="palace-viz-heading"
-            className="font-serif text-2xl font-semibold tracking-[0.2em] text-[#8B2323] sm:text-3xl md:text-4xl"
-          >
-            紫禁数读：古建筑营造密码
-          </h2>
-          <p className="mx-auto mt-3 max-w-3xl text-sm leading-relaxed text-[#1A1A1A]/85">
+        <header className="section-heading palace-heading palace-heading--center">
+          <div>
+            <span className="section-kicker">PALACE DATA</span>
+            <h2 id="palace-viz-heading">
+              紫禁数读：古建筑营造密码
+            </h2>
+          </div>
+          <p>
             图表围绕材作、屋顶形制、斗栱传力、彩画类型与宫殿体量展开，配色延续宫墙朱红、琉璃明黄、边框暗金、徽墨黑、点翠绿与霁蓝。
             可结合《万历的紫禁城》《中国建筑史》等文献理解古建筑营造体系。
           </p>

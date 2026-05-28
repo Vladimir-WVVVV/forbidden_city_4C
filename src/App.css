@@ -27,8 +27,9 @@
 
 html, body, #root {
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
+  height: auto;
+  overflow-x: hidden;
   font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', serif;
   background-color: var(--color-paper);
   color: var(--color-ink);
@@ -36,8 +37,10 @@ html, body, #root {
 
 .app {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  height: auto;
   position: relative;
+  overflow-x: hidden;
 }
 
 /* =============================================================================
@@ -46,7 +49,8 @@ html, body, #root {
 
 .intro-page {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  min-height: 100vh;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -75,9 +79,9 @@ html, body, #root {
   height: 100%;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.32) 0%,
-    rgba(0, 0, 0, 0.46) 48%,
-    rgba(0, 0, 0, 0.58) 100%
+    rgba(0, 0, 0, 0.26) 0%,
+    rgba(0, 0, 0, 0.44) 52%,
+    rgba(0, 0, 0, 0.56) 100%
   );
   z-index: 1;
 }
@@ -87,19 +91,21 @@ html, body, #root {
   z-index: 2;
   text-align: center;
   color: white;
+  width: min(100%, 980px);
   padding: 2rem;
-  transform: translateY(36px);
+  transform: translateY(58px);
 }
 
 .intro-title {
-  font-family: "STXingkai", "华文行楷", "Kaiti SC", "KaiTi", "楷体", "FangSong", "仿宋", serif;
-  font-size: clamp(3.6rem, 8vw, 7rem);
+  font-family: "STXingkai", "华文行楷", "KaiTi", "楷体", "FangSong", "仿宋", serif;
+  font-size: clamp(4rem, 8.4vw, 7.8rem);
   font-weight: 500;
-  letter-spacing: 0.28em;
-  margin-bottom: 1.35rem;
-  text-indent: 0.28em;
-  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.48), 0 1px 0 rgba(255, 255, 255, 0.22);
-  background: linear-gradient(135deg, #fff8dc 0%, #f7df8b 46%, #ffffff 100%);
+  letter-spacing: 0.32em;
+  margin-bottom: 1.65rem;
+  text-indent: 0.32em;
+  line-height: 1.06;
+  text-shadow: 0 5px 18px rgba(45, 12, 8, 0.5), 0 1px 0 rgba(255, 255, 255, 0.18);
+  background: linear-gradient(135deg, #fff9e4 0%, #e9c866 44%, #fffdf4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -107,21 +113,21 @@ html, body, #root {
 
 .intro-subtitle {
   font-family: "KaiTi", "楷体", "STKaiti", "FangSong", "仿宋", serif;
-  font-size: clamp(1.05rem, 2vw, 1.48rem);
-  letter-spacing: 0.24em;
-  margin-bottom: 1.45rem;
-  opacity: 0.92;
-  color: #f3dc9a;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
+  font-size: clamp(1.05rem, 1.7vw, 1.42rem);
+  letter-spacing: 0.2em;
+  margin-bottom: 1.85rem;
+  opacity: 0.94;
+  color: #f0d78e;
+  text-shadow: 0 2px 10px rgba(45, 12, 8, 0.45);
 }
 
 .intro-positioning {
   max-width: 800px;
-  margin: 0 auto 2.45rem;
+  margin: 0 auto 3rem;
   font-family: "FangSong", "仿宋", "KaiTi", "楷体", "STKaiti", serif;
   font-size: clamp(1rem, 1.8vw, 1.22rem);
   line-height: 2;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.09em;
   color: rgba(255, 248, 224, 0.94);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
@@ -130,16 +136,17 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 3rem;
-  font-size: 1.25rem;
-  font-family: inherit;
+  padding: 1rem 3.15rem;
+  font-size: 1.16rem;
+  font-family: "KaiTi", "楷体", "FangSong", "仿宋", serif;
+  letter-spacing: 0.12em;
   color: var(--color-gold-light);
   background: linear-gradient(135deg, rgba(196, 30, 58, 0.9) 0%, rgba(139, 0, 0, 0.9) 100%);
   border: 2px solid var(--color-gold);
-  border-radius: 50px;
+  border-radius: 999px;
   cursor: pointer;
   transition: var(--transition-smooth);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 26px rgba(45, 12, 8, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.22);
   position: relative;
   overflow: hidden;
 }
@@ -203,9 +210,9 @@ html, body, #root {
 
 .map-page {
   width: 100%;
-  min-height: 100%;
-  height: 100%;
-  overflow-y: auto;
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   background-color: var(--color-paper);
@@ -613,6 +620,8 @@ html, body, #root {
 .map-footer {
   display: flex;
   justify-content: center;
+  position: relative;
+  bottom: auto;
   padding: 0.75rem 2rem;
   background: var(--color-cream);
   border-top: 1px solid var(--color-border);
@@ -746,7 +755,7 @@ html, body, #root {
 
 .detail-page {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--color-paper);
@@ -1411,6 +1420,216 @@ html, body, #root {
   border-bottom-color: var(--color-gold);
 }
 
+.section-heading.palace-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 2.25rem;
+}
+
+.section-heading.palace-heading--center {
+  align-items: center;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #8B2323;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.28em;
+}
+
+.section-kicker::after {
+  content: '';
+  width: 2.8rem;
+  height: 1px;
+  background: linear-gradient(90deg, #8B2323, rgba(212, 175, 55, 0.3));
+}
+
+.section-heading h2 {
+  margin-top: 0.55rem;
+  color: #1A1A1A;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', serif;
+  font-size: clamp(1.9rem, 3vw, 2.65rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.22;
+}
+
+.section-heading p {
+  max-width: 48rem;
+  color: rgba(26, 26, 26, 0.75);
+  font-size: 0.92rem;
+  line-height: 1.9;
+}
+
+.culture-tidbits-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid rgba(205, 186, 150, 0.8);
+  border-bottom: 1px solid rgba(205, 186, 150, 0.8);
+  background:
+    linear-gradient(180deg, rgba(248, 244, 232, 0.94), rgba(255, 250, 240, 0.92)),
+    #f8f4e8;
+  padding: 3rem 1rem;
+}
+
+.culture-tidbits-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/images/forbidden-city-guide-panorama.png') center / cover no-repeat;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.culture-tidbits-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(212, 175, 55, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(255, 250, 240, 0.82), rgba(248, 244, 232, 0.74));
+  pointer-events: none;
+}
+
+.culture-tidbits-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 1500px;
+  margin: 0 auto;
+  border: 1px solid rgba(205, 186, 150, 0.72);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.76);
+  padding: 1.75rem;
+  box-shadow: inset 0 0 38px rgba(139, 35, 35, 0.04), 0 12px 30px rgba(83, 44, 18, 0.06);
+}
+
+.culture-tidbit-card {
+  position: relative;
+  min-height: 14rem;
+  overflow: hidden;
+  border: 1px solid #CDBA96;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 8px 22px rgba(83, 44, 18, 0.08);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.culture-tidbit-card::after {
+  content: none;
+}
+
+.culture-tidbit-image {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+  width: 38%;
+  height: calc(100% - 2rem);
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  opacity: 0;
+  border: 1px solid rgba(205, 186, 150, 0.75);
+  border-radius: 8px;
+  box-shadow: 0 14px 26px rgba(83, 44, 18, 0.18);
+  transform: translateX(10px) scale(0.98);
+  transition: opacity 260ms ease, transform 320ms ease;
+}
+
+.culture-tidbit-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 14rem;
+  max-width: 100%;
+  flex-direction: column;
+  padding: 1.25rem;
+  transition: max-width 260ms ease;
+}
+
+.culture-tidbit-tag {
+  width: fit-content;
+  border-radius: 4px;
+  background: #8B2323;
+  color: #F4F1E1;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.culture-tidbit-card h3 {
+  margin-top: 1.25rem;
+  color: #8B2323;
+  font-size: 1.22rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.culture-tidbit-card p {
+  flex: 1;
+  margin-top: 0.75rem;
+  color: rgba(26, 26, 26, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.9;
+}
+
+@media (hover: hover) {
+  .culture-tidbit-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(139, 35, 35, 0.5);
+    box-shadow: 0 16px 34px rgba(83, 44, 18, 0.16);
+  }
+
+  .culture-tidbit-card:hover .culture-tidbit-image {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .culture-tidbit-card:hover .culture-tidbit-content {
+    max-width: 60%;
+  }
+}
+
+.culture-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 2rem;
+  border: 1px solid rgba(205, 186, 150, 0.86);
+  border-radius: 8px;
+  background: rgba(250, 246, 236, 0.86);
+  padding: 1rem;
+  box-shadow: 0 12px 28px rgba(83, 44, 18, 0.1);
+}
+
+.culture-timeline span {
+  color: #8B2323;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+}
+
+.culture-timeline img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(205, 186, 150, 0.72);
+  border-radius: 7px;
+  background: #fffaf0;
+  box-shadow: 0 8px 20px rgba(83, 44, 18, 0.1);
+}
+
 /* 热点详情折叠卡片 */
 .hotspot-fold-card-list {
   display: flex;
@@ -1712,6 +1931,85 @@ html, body, #root {
   border: 1px solid var(--color-border);
   z-index: 5;
   box-shadow: var(--shadow-soft);
+}
+
+.model-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  background: #24130f;
+}
+
+.model-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(0.96) contrast(1.02);
+}
+
+.model-preview-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(25, 10, 7, 0.68), rgba(25, 10, 7, 0.24) 48%, rgba(25, 10, 7, 0.1)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.36));
+}
+
+.model-preview-copy {
+  position: absolute;
+  left: clamp(1.2rem, 4vw, 3rem);
+  bottom: clamp(1.2rem, 5vw, 3.5rem);
+  z-index: 1;
+  max-width: min(30rem, calc(100% - 2.4rem));
+  color: #fff8e6;
+}
+
+.model-preview-copy span {
+  display: block;
+  color: #f1d685;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+}
+
+.model-preview-copy h2 {
+  margin-top: 0.65rem;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.model-preview-copy p {
+  margin-top: 0.8rem;
+  color: rgba(255, 248, 230, 0.82);
+  font-size: 0.94rem;
+  line-height: 1.8;
+}
+
+.model-preview-copy button {
+  margin-top: 1.2rem;
+  border: 1px solid rgba(244, 208, 63, 0.9);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(196, 30, 58, 0.95), rgba(139, 0, 0, 0.95));
+  color: #fff4cf;
+  padding: 0.78rem 1.25rem;
+  font-family: inherit;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.model-preview-copy button:hover,
+.model-preview-copy button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--color-gold-light);
+  outline: none;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.34);
 }
 
 /* =============================================================================
@@ -2235,25 +2533,57 @@ html, body, #root {
   }
   
   .intro-title {
-    letter-spacing: 0.16em;
-    text-indent: 0.16em;
+    font-size: clamp(3rem, 17vw, 5.3rem);
+    letter-spacing: 0.12em;
+    text-indent: 0.12em;
+    overflow-wrap: anywhere;
   }
 
   .intro-content {
     width: 100%;
     padding: 1.5rem 1rem;
-    transform: translateY(24px);
+    transform: translateY(34px);
+  }
+
+  .intro-subtitle {
+    letter-spacing: 0.12em;
+    line-height: 1.75;
   }
 
   .intro-positioning {
-    margin-bottom: 1.7rem;
+    margin-bottom: 2rem;
     letter-spacing: 0.04em;
     line-height: 1.85;
   }
   
   .intro-button {
-    padding: 0.875rem 2rem;
+    padding: 0.875rem 1.65rem;
     font-size: 1rem;
+  }
+
+  .section-heading.palace-heading,
+  .section-heading.palace-heading--center {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.75rem;
+    text-align: left;
+  }
+
+  .section-heading h2 {
+    letter-spacing: 0.08em;
+  }
+
+  .culture-tidbits-section {
+    padding: 2rem 1rem;
+  }
+
+  .culture-tidbits-inner {
+    padding: 1.1rem;
+  }
+
+  .model-preview-copy p {
+    display: none;
   }
 
   .intro-footer {
