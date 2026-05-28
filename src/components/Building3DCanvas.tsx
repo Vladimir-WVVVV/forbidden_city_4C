@@ -13,12 +13,12 @@ export type BuildingHotspotPick = {
 };
 
 type Building3DCanvasProps = {
+  modelPath: string;
+  buildingName: string;
   hotspots: BuildingHotspotPick[];
   onHotspotClick: (hotspot: BuildingHotspotPick) => void;
   selectedHotspotId: string | null;
 };
-
-const CORNER_TOWER_MODEL_URL = '/models/corner-tower.glb';
 
 /** 监听 R3F size，修正透视相机 aspect，避免父级宽度动画时画面拉伸变形 */
 function CameraAspectSync() {
@@ -104,12 +104,13 @@ function HotspotMarker({
 }
 
 function PalaceBuilding({
+  modelPath,
   hotspots,
   onHotspotClick,
   selectedHotspotId,
 }: Building3DCanvasProps) {
   const buildingRef = useRef<THREE.Group>(null);
-  const gltf = useGLTF(CORNER_TOWER_MODEL_URL);
+  const gltf = useGLTF(modelPath);
 
   const { scene, scale, position } = useMemo(() => {
     const clonedScene = gltf.scene.clone(true);
@@ -174,23 +175,23 @@ function SceneContent(props: Building3DCanvasProps) {
   );
 }
 
-function ModelLoading() {
+function ModelLoading({ buildingName }: { buildingName: string }) {
   return (
     <Html center>
-      <div className="model-loading-state">角楼三维模型加载中……</div>
+      <div className="model-loading-state">{buildingName}三维模型加载中……</div>
     </Html>
   );
 }
 
-export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }: Building3DCanvasProps) {
+export function Building3DCanvas({ modelPath, buildingName, hotspots, onHotspotClick, selectedHotspotId }: Building3DCanvasProps) {
   return (
     <div className="building-3d-view relative h-full w-full min-h-0">
       <div className="absolute inset-0 h-full w-full min-h-[200px]">
         <ErrorBoundary
-          resetKey={selectedHotspotId ?? 'model'}
+          resetKey={`${modelPath}-${selectedHotspotId ?? 'model'}`}
           fallback={
             <div className="model-error-state" role="alert">
-              三维模型暂时加载失败，请刷新页面或稍后重试。
+              {buildingName}三维模型暂时加载失败，请刷新页面或稍后重试。
             </div>
           }
         >
@@ -203,8 +204,10 @@ export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }
             gl={{ antialias: true, alpha: false }}
             resize={{ debounce: 0, scroll: false, offsetSize: true }}
           >
-            <Suspense fallback={<ModelLoading />}>
+            <Suspense fallback={<ModelLoading buildingName={buildingName} />}>
               <SceneContent
+                modelPath={modelPath}
+                buildingName={buildingName}
                 hotspots={hotspots}
                 onHotspotClick={onHotspotClick}
                 selectedHotspotId={selectedHotspotId}
@@ -214,7 +217,11 @@ export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }
         </ErrorBoundary>
       </div>
       <div className="view-controls pointer-events-none">
-        <span className="control-hint">点击金色光点查看详情 | 拖拽旋转 | 滚轮缩放</span>
+        <span className="control-hint">
+          {hotspots.length > 0
+            ? '点击金色光点查看详情 | 拖拽旋转 | 滚轮缩放'
+            : '该建筑模型热点正在校准中，可先旋转模型进行整体观察。'}
+        </span>
       </div>
     </div>
   );

@@ -42,6 +42,8 @@ interface BuildingData {
   subtitle: string;
   description: string;
   detailType: '3d' | 'image' | 'placeholder';
+  modelPath?: string;
+  hotspots3D?: BuildingHotspotPick[];
   image?: string;
   mainImage?: string;
   hotspots: HotspotData[];
@@ -452,7 +454,9 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wumen: {
     id: 'wumen',
     name: '午门',
-    detailType: 'image',
+    detailType: '3d',
+    modelPath: '/models/wumen.glb',
+    hotspots3D: [],
     subtitle: '皇权入口与五凤楼形制',
     description: '紫禁城正门',
     image: '/images/wumen-zhutu.jpg',
@@ -466,7 +470,9 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   taihe_dian: {
     id: 'taihe_dian',
     name: '太和殿',
-    detailType: 'image',
+    detailType: '3d',
+    modelPath: '/models/taihedian.glb',
+    hotspots3D: [],
     subtitle: '外朝核心与最高礼制建筑',
     description: '明清举行大典的场所',
     image: buildingImage('taihedian-zhutu.jpg'),
@@ -480,7 +486,9 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   qianqing_gong: {
     id: 'qianqing_gong',
     name: '乾清宫',
-    detailType: 'image',
+    detailType: '3d',
+    modelPath: '/models/qianqinggong.glb',
+    hotspots3D: [],
     subtitle: '内廷后三宫之首',
     description: '皇帝寝宫与理政空间',
     image: buildingImage('qianqinggong-zhutu.jpg'),
@@ -494,7 +502,9 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wuying_dian: {
     id: 'wuying_dian',
     name: '武英殿',
-    detailType: 'image',
+    detailType: '3d',
+    modelPath: '/models/wuyingdian.glb',
+    hotspots3D: [],
     subtitle: '外朝西路殿宇',
     description: '西路文献与典籍空间',
     image: buildingImage('wuyingdian-zhutu.jpg'),
@@ -508,7 +518,9 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wenhua_dian: {
     id: 'wenhua_dian',
     name: '文华殿',
-    detailType: 'image',
+    detailType: '3d',
+    modelPath: '/models/wenhuadian.glb',
+    hotspots3D: [],
     subtitle: '外朝东路殿宇',
     description: '东路典学空间',
     image: buildingImage('wenhuadian-zhutu.jpg'),
@@ -523,6 +535,8 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
     id: 'corner_tower',
     name: '东北角楼',
     detailType: '3d',
+    modelPath: '/models/corner-tower.glb',
+    hotspots3D: cornerTowerHotspots,
     subtitle: '九梁十八柱七十二条脊',
     description: '紫禁城城池防卫设施',
     image: '/images/corner-tower.jpg',
@@ -534,11 +548,13 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
 const GUIDE_BUILDINGS = Object.values(BUILDINGS_BY_ID);
 
 function getBuildingCapability(building: BuildingData) {
-  if (building.detailType === '3d') {
+  if (building.modelPath) {
     return {
       label: '3D 深度探索',
-      support: '支持：三维模型 / 构件热点 / 线稿实景对照 / AI 讲解',
-      badges: ['重点样本', '推荐体验'],
+      support: building.hotspots3D?.length
+        ? '支持：三维模型 / 构件热点 / 线稿实景对照 / AI 讲解'
+        : '支持：三维模型 / 图文节点 / AI 讲解',
+      badges: building.id === 'corner_tower' ? ['重点样本', '推荐体验'] : ['3D 模型', '图文导览'],
     };
   }
 
@@ -1128,7 +1144,8 @@ function DetailPage({
   const [modelActive, setModelActive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDetailExpanded = viewMode === 'detail';
-  const hasModel = building.detailType === '3d';
+  const hasModel = Boolean(building.modelPath);
+  const modelHotspots = building.hotspots3D ?? [];
   const isImageDetail = building.detailType === 'image';
   const isPlaceholder = building.detailType === 'placeholder';
   const hotspotPresentation = HOTSPOT_PRESENTATION_BY_BUILDING[building.id] ?? HOTSPOT_PRESENTATION_BY_BUILDING.corner_tower;
@@ -1154,8 +1171,10 @@ function DetailPage({
     : overviewAiContext;
   const guideSteps = hasModel
     ? {
-        title: '如何读懂角楼？',
-        steps: ['① 旋转模型，观察整体屋顶层次', '② 点击热点，识别关键构件', '③ 对照线稿与实景，理解构造与礼制含义'],
+        title: `如何读懂${building.name}？`,
+        steps: modelHotspots.length > 0
+          ? ['① 点击进入 3D 识读，观察整体形制', '② 点击模型热点，识别关键构件', '③ 对照图文资料，理解构造与礼制含义']
+          : ['① 点击进入 3D 识读，观察整体形制', '② 拖拽旋转模型，确认屋顶、殿身与台基关系', '③ 结合左侧图文节点，理解空间功能和文化意义'],
       }
     : {
         title: '如何浏览该建筑？',
@@ -1484,7 +1503,13 @@ function DetailPage({
                 </div>
               </div>
             ) : hasModel ? (
-              <Building3DCanvas hotspots={building.hotspots} onHotspotClick={handleHotspotClick} selectedHotspotId={selectedHotspot?.id ?? null} />
+              <Building3DCanvas
+                modelPath={building.modelPath ?? ''}
+                buildingName={building.name}
+                hotspots={modelHotspots}
+                onHotspotClick={handleHotspotClick}
+                selectedHotspotId={selectedHotspot?.id ?? null}
+              />
             ) : isImageDetail ? (
               <BuildingImageHotspot
                 buildingId={building.id}
