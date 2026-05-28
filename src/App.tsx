@@ -5,6 +5,7 @@ import { PalaceDataChartsSection, PalacePaintingChartsPage } from './components/
 import { Building3DCanvas, type BuildingHotspotPick } from './components/Building3DCanvas';
 import { BuildingImageHotspot, type ImageHotspotPick } from './components/BuildingImageHotspot';
 import { AiGuidePanel } from './components/AiGuidePanel';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { HotspotDetailCards } from './components/HotspotDetailCards';
 import { cn } from './lib/utils';
 import './App.css';
@@ -17,6 +18,9 @@ interface HotspotData {
   shortDesc: string;
   type?: string;
   image?: string;
+  positionLabel?: string;
+  functionSummary?: string;
+  observeTip?: string;
   position: { x: number; y: number; z?: number };
   content: {
     title: string;
@@ -36,7 +40,8 @@ interface BuildingData {
   name: string;
   subtitle: string;
   description: string;
-  image: string;
+  detailType: '3d' | 'image' | 'placeholder';
+  image?: string;
   mainImage?: string;
   hotspots: HotspotData[];
   overview: string;
@@ -245,6 +250,52 @@ const cornerTowerHotspots: HotspotData[] = [
   },
 ];
 
+cornerTowerHotspots.forEach((hotspot) => {
+  const defaults: Record<string, Pick<HotspotData, 'positionLabel' | 'functionSummary' | 'observeTip'>> = {
+    xumizuo: {
+      positionLabel: '建筑下部台基',
+      functionSummary: '承托楼体、组织排水并表达礼制等级',
+      observeTip: '请从低角度观察台基与城墙转角的衔接关系',
+    },
+    waiqiang: {
+      positionLabel: '建筑外侧围护',
+      functionSummary: '围护、防御与红墙黄瓦的视觉秩序',
+      observeTip: '请环绕模型观察墙体、箭窗与屋檐的层次',
+    },
+    jianchuang: {
+      positionLabel: '墙体开口部位',
+      functionSummary: '兼顾瞭望、防御、采光与立面节奏',
+      observeTip: '请从侧面观察箭窗开口与厚重墙体的比例',
+    },
+    wuding: {
+      positionLabel: '建筑上部屋顶',
+      functionSummary: '排水、防护、视觉中心与等级表达',
+      observeTip: '请俯看屋脊交错关系，再转到侧面观察飞檐层次',
+    },
+    dougong: {
+      positionLabel: '屋檐与梁架之间',
+      functionSummary: '承托出檐、分散荷载并形成檐下装饰秩序',
+      observeTip: '请放大檐下区域，观察斗、拱、梁枋如何层叠',
+    },
+    liangjia: {
+      positionLabel: '内部木构骨架',
+      functionSummary: '传递屋顶荷载并稳定复杂屋面体系',
+      observeTip: '请旋转模型寻找屋顶与柱网之间的受力关系',
+    },
+    caizuo: {
+      positionLabel: '室内与梁枋装饰',
+      functionSummary: '以彩画和天花组织礼制审美与空间氛围',
+      observeTip: '请对照构件说明理解装饰如何依附于木构体系',
+    },
+  };
+
+  Object.assign(hotspot, defaults[hotspot.id] ?? {
+    positionLabel: '三维模型构件',
+    functionSummary: hotspot.shortDesc,
+    observeTip: '请旋转模型，从整体层次中定位该构件',
+  });
+});
+
 const CUSTOM_FORBIDDEN_CITY_MAP = '/images/custom-palace-map.png';
 const CUSTOM_MAP_SIZE = { width: 1879, height: 837 };
 
@@ -400,6 +451,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wumen: {
     id: 'wumen',
     name: '午门',
+    detailType: 'image',
     subtitle: '皇权入口与五凤楼形制',
     description: '紫禁城正门',
     image: '/images/wumen-zhutu.jpg',
@@ -413,6 +465,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   taihe_dian: {
     id: 'taihe_dian',
     name: '太和殿',
+    detailType: 'image',
     subtitle: '外朝核心与最高礼制建筑',
     description: '明清举行大典的场所',
     image: buildingImage('taihedian-zhutu.jpg'),
@@ -426,6 +479,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   qianqing_gong: {
     id: 'qianqing_gong',
     name: '乾清宫',
+    detailType: 'image',
     subtitle: '内廷后三宫之首',
     description: '皇帝寝宫与理政空间',
     image: buildingImage('qianqinggong-zhutu.jpg'),
@@ -439,6 +493,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wuying_dian: {
     id: 'wuying_dian',
     name: '武英殿',
+    detailType: 'image',
     subtitle: '外朝西路殿宇',
     description: '西路文献与典籍空间',
     image: buildingImage('wuyingdian-zhutu.jpg'),
@@ -452,6 +507,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   wenhua_dian: {
     id: 'wenhua_dian',
     name: '文华殿',
+    detailType: 'image',
     subtitle: '外朝东路殿宇',
     description: '东路典学空间',
     image: buildingImage('wenhuadian-zhutu.jpg'),
@@ -465,6 +521,7 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
   corner_tower: {
     id: 'corner_tower',
     name: '东北角楼',
+    detailType: '3d',
     subtitle: '九梁十八柱七十二条脊',
     description: '紫禁城城池防卫设施',
     image: '/images/corner-tower.jpg',
@@ -474,6 +531,30 @@ const BUILDINGS_BY_ID: Record<string, BuildingData> = {
 };
 
 const GUIDE_BUILDINGS = Object.values(BUILDINGS_BY_ID);
+
+function getBuildingCapability(building: BuildingData) {
+  if (building.detailType === '3d') {
+    return {
+      label: '3D 深度探索',
+      support: '支持：三维模型 / 构件热点 / 线稿实景对照 / AI 讲解',
+      badges: ['重点样本', '推荐体验'],
+    };
+  }
+
+  if (building.detailType === 'image') {
+    return {
+      label: '图文导览',
+      support: '支持：建筑图片 / 基础介绍 / 文化说明',
+      badges: ['图片详情'],
+    };
+  }
+
+  return {
+    label: '资料建设中',
+    support: '后续将补充图文导览内容',
+    badges: ['待开放'],
+  };
+}
 
 function AncientGuideDropdown({
   buildings,
@@ -515,21 +596,25 @@ function AncientGuideDropdown({
 
       {open && (
         <div className="ancient-guide-menu" role="menu">
-          {buildings.map((building) => (
-            <button
-              key={building.id}
-              className={cn('ancient-guide-item', activeBuildingId === building.id && 'active')}
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                onSelectBuilding(building);
-                setOpen(false);
-              }}
-            >
-              <span className="ancient-guide-name">{building.name}</span>
-              <span className="ancient-guide-desc">{building.subtitle}</span>
-            </button>
-          ))}
+          {buildings.map((building) => {
+            const capability = getBuildingCapability(building);
+            return (
+              <button
+                key={building.id}
+                className={cn('ancient-guide-item', activeBuildingId === building.id && 'active')}
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  onSelectBuilding(building);
+                  setOpen(false);
+                }}
+              >
+                <span className="ancient-guide-name">{building.name}</span>
+                <span className="ancient-guide-desc">{building.subtitle}</span>
+                <span className={`ancient-guide-type ancient-guide-type--${building.detailType}`}>{capability.label}</span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
@@ -557,10 +642,16 @@ function IntroPage({ onEnter }: { onEnter: () => void }) {
       <div className="intro-content">
         <h1 className="intro-title">故宫建筑</h1>
         <p className="intro-subtitle">中国古代建筑成就 · 交互可视化</p>
+        <p className="intro-positioning">从一座城，到一处构件：用交互可视化读懂紫禁城营造智慧。</p>
         <button ref={buttonRef} className="intro-button" onClick={onEnter}>
           <span>开启故宫建筑之旅</span>
           <ChevronRight className="button-icon" />
         </button>
+        <div className="intro-highlights" aria-label="项目核心亮点">
+          {['三维构件识读', '紫禁城空间导览', '古建筑数据可视化', 'AI 智能讲解'].map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
       </div>
       <div className="intro-footer">
         <div className="footer-left">
@@ -696,10 +787,11 @@ function MapPage({
             <div className="map-markers-layer">
               {FORBIDDEN_CITY_MAP_MARKERS.map((pin) => {
                 const building = BUILDINGS_BY_ID[pin.id];
+                const capability = getBuildingCapability(building);
                 return (
                   <div
                     key={pin.id}
-                    className={`building-marker ${hoveredBuilding === pin.id ? 'hovered' : ''}`}
+                    className={`building-marker building-marker--${building.detailType} ${hoveredBuilding === pin.id ? 'hovered' : ''}`}
                     style={{
                       left: `${(pin.x / CUSTOM_MAP_SIZE.width) * 100}%`,
                       top: `${(pin.y / CUSTOM_MAP_SIZE.height) * 100}%`,
@@ -722,7 +814,16 @@ function MapPage({
                     </div>
                     <div className="marker-label">
                       <span className="marker-name">{pin.name}</span>
-                      <span className="marker-desc">➔ 点击开启 3D 拆解</span>
+                      <span className="marker-card">
+                        <strong>{building.name}</strong>
+                        <em>{capability.label}</em>
+                        <small>{capability.support}</small>
+                        <span className="marker-badges">
+                          {capability.badges.map((badge) => (
+                            <b key={badge}>{badge}</b>
+                          ))}
+                        </span>
+                      </span>
                     </div>
                   </div>
                 );
@@ -732,12 +833,27 @@ function MapPage({
         </div>
       </div>
 
+      <section className="source-note" aria-label="资料来源与说明">
+        <span className="source-note-title">资料来源</span>
+        <p className="source-note-text">
+          故宫博物院官网公开资料、《故宫建筑图典》、梁思成《中国建筑史》、于倬云《紫禁城宫殿》等资料整理。
+        </p>
+      </section>
+
+      <section className="demo-route" aria-label="国赛演示推荐路线">
+        <div>
+          <span className="demo-route-kicker">推荐演示路线</span>
+          <p>首页 → 地图导览 → 东北角楼 3D 深度探索 → 点击屋顶 / 斗栱等构件热点 → 查看线稿与实景对照 → 进入彩画专题 → 使用 AI 讲解</p>
+        </div>
+        <strong>东北角楼是当前三维构件识读样本，其他建筑主要提供图文导览，用于扩展紫禁城整体空间认知。</strong>
+      </section>
+
       <PalaceDataChartsSection onOpenPainting={onOpenPainting} />
 
       <CultureTidbitsSection />
 
       <div className="map-footer">
-        <span>© 故宫博物院 | 数据仅供学习研究使用</span>
+        <span>© 紫禁营造志 | 内容仅供课程学习、交互展示与研究交流使用</span>
       </div>
     </div>
   );
@@ -865,9 +981,12 @@ function DetailPage({
   const [selectedHotspot, setSelectedHotspot] = useState<HotspotData | null>(null);
   const [viewMode, setViewMode] = useState<'overview' | 'detail'>('overview');
   const [deepZoneVisible, setDeepZoneVisible] = useState(false);
+  const [exploredHotspotIds, setExploredHotspotIds] = useState<Set<string>>(() => new Set());
   const containerRef = useRef<HTMLDivElement>(null);
   const isDetailExpanded = viewMode === 'detail';
-  const hasModel = building.id === 'corner_tower';
+  const hasModel = building.detailType === '3d';
+  const isImageDetail = building.detailType === 'image';
+  const isPlaceholder = building.detailType === 'placeholder';
   const hotspotPresentation = HOTSPOT_PRESENTATION_BY_BUILDING[building.id] ?? HOTSPOT_PRESENTATION_BY_BUILDING.corner_tower;
   const selectedHotspotIndex = selectedHotspot ? building.hotspots.findIndex((hotspot) => hotspot.id === selectedHotspot.id) : -1;
   const selectedHotspotReading = selectedHotspot ? getHotspotReading(selectedHotspot) : null;
@@ -889,6 +1008,15 @@ function DetailPage({
         .filter(Boolean)
         .join('\n')
     : overviewAiContext;
+  const guideSteps = hasModel
+    ? {
+        title: '如何读懂角楼？',
+        steps: ['① 旋转模型，观察整体屋顶层次', '② 点击热点，识别关键构件', '③ 对照线稿与实景，理解构造与礼制含义'],
+      }
+    : {
+        title: '如何浏览该建筑？',
+        steps: ['① 查看建筑主图，建立整体印象', '② 阅读基础介绍，理解空间功能', '③ 结合文化说明，认识其礼制含义'],
+      };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -912,6 +1040,7 @@ function DetailPage({
       setSelectedHotspot(building.hotspots[0] ?? null);
       setViewMode('overview');
       setDeepZoneVisible(false);
+      setExploredHotspotIds(new Set());
     });
     return () => cancelAnimationFrame(id);
   }, [building.id, building.hotspots]);
@@ -921,6 +1050,9 @@ function DetailPage({
     if (!full) return;
     setSelectedHotspot(full);
     setViewMode('detail');
+    if (hasModel) {
+      setExploredHotspotIds((current) => new Set(current).add(full.id));
+    }
   };
 
   const handleBackToOverview = () => {
@@ -928,6 +1060,38 @@ function DetailPage({
     setDeepZoneVisible(false);
     setTimeout(() => setSelectedHotspot(building.hotspots[0] ?? null), 300);
   };
+
+  if (isPlaceholder) {
+    return (
+      <div ref={containerRef} className="detail-page">
+        <nav className="detail-nav">
+          <div className="nav-brand">
+            <button className="back-btn" onClick={onBack}>
+              <ArrowLeft size={20} />
+              <span>返回地图</span>
+            </button>
+            <span className="building-name">{building.name}</span>
+          </div>
+          <div className="nav-actions">
+            <AncientGuideDropdown buildings={GUIDE_BUILDINGS} activeBuildingId={building.id} onSelectBuilding={onSelectBuilding} />
+          </div>
+        </nav>
+        <main className="placeholder-detail">
+          <div className="placeholder-detail-copy">
+            <span>资料建设中</span>
+            <h1>{building.name}</h1>
+            <p>该建筑详情正在建设中。你可以先体验东北角楼的 3D 深度识读，或返回地图查看其他建筑。</p>
+            <div className="placeholder-actions">
+              <button type="button" className="secondary-action" onClick={onBack}>返回地图</button>
+              <button type="button" className="primary-action" onClick={() => onSelectBuilding(BUILDINGS_BY_ID.corner_tower)}>
+                前往东北角楼 3D 探索
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="detail-page">
@@ -963,7 +1127,18 @@ function DetailPage({
               <div className="panel-header-section">
                 <h1 className="panel-title">{building.name}</h1>
                 <p className="panel-subtitle">{building.subtitle}</p>
+                <span className={`detail-type-badge detail-type-badge--${building.detailType}`}>
+                  {getBuildingCapability(building).label}
+                </span>
                 <div className="divider" />
+              </div>
+              <div className={`reading-guide reading-guide--${building.detailType}`}>
+                <h3>{guideSteps.title}</h3>
+                <div>
+                  {guideSteps.steps.map((step) => (
+                    <span key={step}>{step}</span>
+                  ))}
+                </div>
               </div>
               <div className="panel-section">
                 <h3 className="section-title">建筑概述</h3>
@@ -1025,7 +1200,7 @@ function DetailPage({
                       <div className="divider" />
                     </div>
 
-                    {selectedHotspotReading && (
+                    {hasModel && selectedHotspotReading && (
                       <div className={`hotspot-reading-panel hotspot-reading-panel--${selectedHotspotReading.mode}`}>
                         <div className="hotspot-reading-mark">
                           <span>{String(Math.max(selectedHotspotIndex + 1, 1)).padStart(2, '0')}</span>
@@ -1041,6 +1216,28 @@ function DetailPage({
                             <span>{hotspotPresentation.detailHint}</span>
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {hasModel && selectedHotspot && (
+                      <div className="hotspot-progress-panel">
+                        <div>
+                          <span>当前识读对象</span>
+                          <strong>{selectedHotspot.name}</strong>
+                        </div>
+                        <div>
+                          <span>所在位置</span>
+                          <strong>{selectedHotspot.positionLabel ?? '三维模型构件'}</strong>
+                        </div>
+                        <div>
+                          <span>功能作用</span>
+                          <strong>{selectedHotspot.functionSummary ?? selectedHotspot.shortDesc}</strong>
+                        </div>
+                        <div>
+                          <span>观察提示</span>
+                          <strong>{selectedHotspot.observeTip ?? '请旋转模型，从整体层次中定位该构件'}</strong>
+                        </div>
+                        <p>已探索 {exploredHotspotIds.size} / {building.hotspots.length} 个构件</p>
                       </div>
                     )}
 
@@ -1131,15 +1328,17 @@ function DetailPage({
           <div className="absolute inset-0 h-full w-full min-h-0">
             {hasModel ? (
               <Building3DCanvas hotspots={building.hotspots} onHotspotClick={handleHotspotClick} selectedHotspotId={selectedHotspot?.id ?? null} />
-            ) : (
+            ) : isImageDetail ? (
               <BuildingImageHotspot
                 buildingId={building.id}
                 buildingName={building.name}
-                mainImage={building.mainImage ?? building.image}
+                mainImage={building.mainImage ?? building.image ?? ''}
                 hotspots={building.hotspots}
                 selectedHotspotId={selectedHotspot?.id ?? null}
                 onSelectHotspot={handleHotspotClick}
               />
+            ) : (
+              <div className="image-detail-empty">该建筑详情正在建设中。</div>
             )}
           </div>
         </div>
@@ -1182,18 +1381,20 @@ function App() {
 
   return (
     <div className="app">
-      {currentPage === 'intro' && <IntroPage onEnter={handleEnter} />}
-      {currentPage === 'map' && (
-        <MapPage
-          onSelectBuilding={handleSelectBuilding}
-          onBack={handleBackToIntro}
-          onOpenPainting={handleOpenPainting}
-        />
-      )}
-      {currentPage === 'detail' && selectedBuilding && (
-        <DetailPage building={selectedBuilding} onBack={handleBackToMap} onSelectBuilding={handleSelectBuilding} />
-      )}
-      {currentPage === 'painting' && <PalacePaintingChartsPage onBack={handleBackToMap} />}
+      <ErrorBoundary resetKey={`${currentPage}-${selectedBuilding?.id ?? 'none'}`}>
+        {currentPage === 'intro' && <IntroPage onEnter={handleEnter} />}
+        {currentPage === 'map' && (
+          <MapPage
+            onSelectBuilding={handleSelectBuilding}
+            onBack={handleBackToIntro}
+            onOpenPainting={handleOpenPainting}
+          />
+        )}
+        {currentPage === 'detail' && selectedBuilding && (
+          <DetailPage building={selectedBuilding} onBack={handleBackToMap} onSelectBuilding={handleSelectBuilding} />
+        )}
+        {currentPage === 'painting' && <PalacePaintingChartsPage onBack={handleBackToMap} />}
+      </ErrorBoundary>
     </div>
   );
 }

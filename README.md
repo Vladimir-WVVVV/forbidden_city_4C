@@ -1,270 +1,86 @@
-# 故宫建筑细节交互可视化
+# 紫禁营造志
 
-## 腾讯混元 AI 讲解接入
+“紫禁营造志”是一个以故宫建筑细节交互为主题的 React + TypeScript + Vite 单页 Web 应用，面向中国大学生计算机设计大赛国赛展示场景。作品叙事以“从一座城，到一处构件”为核心：先通过紫禁城空间导览建立整体认知，再以东北角楼作为三维构件识读样本，扩展到数据可视化、彩画专题与 AI 智能讲解。
 
-本项目已加入一个最小可用的本地后端代理，前端只请求 `/api/hunyuan`，腾讯云密钥只放在服务端 `.env` 中，不会暴露到浏览器。
+## 当前作品结构
 
-1. 复制 `.env.example` 为 `.env`，填入 `TENCENT_SECRET_ID` 和 `TENCENT_SECRET_KEY`。
-2. 启动后端代理：
+- 东北角楼：3D 深度探索样本，支持三维模型、构件热点、线稿与实景对照、AI 讲解。
+- 午门、太和殿、乾清宫、文华殿、武英殿：图文导览节点，展示建筑图片、基础介绍、空间功能与文化说明。
+- 资料建设中节点：用于标注后续扩展内容，不伪造 3D 模型或热点。
+- 彩画专题与数据可视化：作为故宫建筑知识系统的专题扩展，当前图表数据保持项目既有逻辑。
+- AI 讲解：通过服务端代理调用混元接口，前端不保存密钥，并提供本地兜底摘要。
+
+## 技术栈
+
+- React 19 + TypeScript
+- Vite
+- Three.js / React Three Fiber / Drei
+- ECharts / echarts-for-react
+- GSAP
+- Tailwind CSS 与本地 CSS
+- Express 服务端代理
+
+## 本地运行
+
+安装依赖：
 
 ```bash
-npm run server
+npm install
 ```
 
-3. 另开一个终端启动前端。局域网访问时使用 `dev:lan`，然后用终端输出的 Network 地址访问：
+启动前端开发服务：
+
+```bash
+npm run dev
+```
+
+局域网演示可使用：
 
 ```bash
 npm run dev:lan
 ```
 
-开发环境下 Vite 会把 `/api` 请求代理到 `VITE_API_PROXY_TARGET`，默认是 `http://127.0.0.1:3001`。后端代理默认监听 `HOST=0.0.0.0` 和 `PORT=3001`，同一局域网设备可以通过宿主机 IP 访问前端页面。
+## AI 讲解代理
 
-构建后推荐使用一体化 Node 部署：
+前端只请求 `/api/hunyuan`，腾讯云或 TokenHub 相关密钥只放在服务端 `.env` 中，不要写入前端代码。
+
+1. 复制 `.env.example` 为 `.env`。
+2. 根据当前后端代理配置填写 `HUNYUAN_API_KEY`、`HUNYUAN_BASE_URL`、`HUNYUAN_MODEL` 等变量。
+3. 启动服务端代理：
+
+```bash
+npm run server
+```
+
+开发环境下 Vite 会将 `/api` 请求代理到后端。AI 接口异常或超时时，前端会展示本地讲解摘要，保证比赛现场演示不会停在无限加载状态。
+
+## 构建与部署
+
+构建生产包：
 
 ```bash
 npm run build
+```
+
+一体化 Node 部署：
+
+```bash
 npm run start
 ```
 
-`server.cjs` 会同时托管 `dist` 静态文件和 `/api/hunyuan` 接口。由于当前 AI 讲解依赖 Express 代理和服务端 `.env`，GitHub Pages 这类纯静态托管不能完整承载带 AI 接口的版本；如需上线，优先选择支持 Node 服务的 Render、Railway、Fly.io、云服务器或类似平台。
+`server.cjs` 会托管 `dist` 静态文件，并提供 `/api/hunyuan` 代理。由于 AI 讲解依赖服务端环境变量，完整版本建议部署到支持 Node 服务的平台或服务器；纯静态托管只能展示不含真实 AI 调用的前端部分。
 
----
+## 项目文件说明
 
-# Villa Template
+- `src/App.tsx`：主状态流转与核心页面，保持 `intro → map → detail → painting`。
+- `src/components/Building3DCanvas.tsx`：东北角楼专用三维模型展示。
+- `src/components/BuildingImageHotspot.tsx`：图文建筑主图热点导览。
+- `src/components/HotspotDetailCards.tsx`：热点详情折叠卡片。
+- `src/components/PalaceDataCharts.tsx`：数据可视化和彩画专题。
+- `src/components/AiGuidePanel.tsx`：AI 讲解面板、模式选择、超时与兜底摘要。
+- `src/components/ErrorBoundary.tsx`：基础错误边界，避免局部组件异常导致整页白屏。
+- `server.cjs`：Express 代理与构建产物托管。
 
-A luxury wine estate / winery website template featuring elegant animations, a dark theme with gold accents, and a comprehensive section-based layout.
+## 历史模板说明
 
-## Features
-
-- **Preloader** with animated brand reveal
-- **Navigation** with desktop dropdowns and mobile menu with smooth transitions
-- **Hero Section** with Ken Burns background, staggered reveal animations, and count-up statistics
-- **Wine Showcase** with tab-based wine selector, animated bottle display with glow effects, feature cards, and quote block
-- **Winery Carousel** with auto-advancing slides, Ken Burns effect, and slide indicators
-- **Museum Section** with tabbed content, horizontal timeline, founder photo, and year badge
-- **News Section** with article grid, testimonials with star ratings, and story section with quote overlay
-- **Contact Form** with Formspree integration, contact info cards, and success/error states
-- **Footer** with newsletter subscription, social links, link groups, and age verification notice
-- **Scroll To Top** floating button
-- All sections have scroll-triggered entrance animations (fade-up, slide-in-left, slide-in-right, scale-in)
-- Fully responsive design
-- All content driven by a single `config.ts` file
-
-## Tech Stack
-
-- React 18 + TypeScript
-- Vite
-- Tailwind CSS
-- Lucide React (icons)
-- shadcn/ui components
-- Formspree (contact form / newsletter)
-
-## Quick Start
-
-```bash
-cd villa
-npm install
-npm run dev
-```
-
-Open `src/config.ts` and fill in all configuration objects with your content. All components render nothing when their primary config fields are empty.
-
-## Configuration
-
-All content is managed in `src/config.ts`. Below is a description of each config object.
-
-### siteConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| title | string | Page title for the browser tab |
-| description | string | Meta description for SEO |
-| language | string | HTML lang attribute (e.g. `""`) |
-| keywords | string | Meta keywords |
-| ogImage | string | Open Graph image URL |
-| canonical | string | Canonical URL |
-
-### navigationConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| brandName | string | Brand name displayed in the navbar |
-| brandSubname | string | Secondary brand name (script font) |
-| tagline | string | Small tagline below brand name |
-| navLinks | NavLink[] | Navigation links with name, href, icon (string), optional dropdown |
-| ctaButtonText | string | CTA button text in the navbar |
-
-### preloaderConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| brandName | string | Main brand name shown during loading |
-| brandSubname | string | Script-font subname shown during loading |
-| yearText | string | Establishment year text (e.g. "Est. 1887") |
-
-### heroConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Decorative script text above title |
-| mainTitle | string | Main hero heading |
-| ctaButtonText | string | CTA button text |
-| ctaTarget | string | CTA scroll target (e.g. "#wines") |
-| stats | HeroStat[] | Array of { value: number, suffix: string, label: string } |
-| decorativeText | string | Vertical decorative text on the left side |
-| backgroundImage | string | Hero background image path |
-
-### wineShowcaseConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Script-font section label |
-| subtitle | string | Uppercase subtitle |
-| mainTitle | string | Section heading |
-| wines | Wine[] | Array of wine objects (id, name, subtitle, year, image, filter, glowColor, description, tastingNotes, alcohol, temperature, aging) |
-| features | WineFeature[] | Array of { icon: string, title: string, description: string } |
-| quote | WineQuote | { text: string, attribution: string, prefix: string } |
-
-### wineryCarouselConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Script-font section label |
-| subtitle | string | Uppercase subtitle |
-| mainTitle | string | Section heading |
-| locationTag | string | Location tag text with map pin |
-| slides | CarouselSlide[] | Array of { image, title, subtitle, area, unit, description } |
-
-### museumConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Script-font section label |
-| subtitle | string | Uppercase subtitle |
-| mainTitle | string | Section heading |
-| introText | string | Introduction paragraph |
-| timeline | TimelineEvent[] | Array of { year: string, event: string } |
-| tabs | MuseumTab[] | Array of { id, name, icon (string), image, content: { title, description, highlight } } |
-| openingHours | string | Opening hours text |
-| openingHoursLabel | string | Label for opening hours |
-| ctaButtonText | string | CTA button text |
-| yearBadge | string | Year displayed in the badge |
-| yearBadgeLabel | string | Label below the year badge |
-| quote | MuseumQuote | { prefix, text, attribution } |
-| founderPhotoAlt | string | Alt text for founder photo |
-| founderPhoto | string | Founder photo image path |
-
-### newsConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Script-font section label |
-| subtitle | string | Uppercase subtitle |
-| mainTitle | string | Section heading |
-| viewAllText | string | "View all" button text |
-| readMoreText | string | "Read more" link text |
-| articles | NewsArticle[] | Array of { id, image, title, excerpt, date, category } |
-| testimonialsScriptText | string | Testimonials script label |
-| testimonialsSubtitle | string | Testimonials subtitle |
-| testimonialsMainTitle | string | Testimonials heading |
-| testimonials | Testimonial[] | Array of { name, role, text, rating } |
-| storyScriptText | string | Story script label |
-| storySubtitle | string | Story subtitle |
-| storyTitle | string | Story heading |
-| storyParagraphs | string[] | Story body paragraphs |
-| storyTimeline | StoryTimelineItem[] | Array of { value, label } |
-| storyQuote | StoryQuote | { prefix, text, attribution } |
-| storyImage | string | Story section image path |
-| storyImageCaption | string | Story image alt text |
-
-### contactFormConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| scriptText | string | Script-font section label |
-| subtitle | string | Uppercase subtitle |
-| mainTitle | string | Section heading |
-| introText | string | Intro text below heading |
-| contactInfoTitle | string | Contact info sidebar heading |
-| contactInfo | ContactInfoItem[] | Array of { icon (string), label, value, subtext } |
-| form | ContactFormFields | Object with nameLabel, namePlaceholder, emailLabel, emailPlaceholder, phoneLabel, phonePlaceholder, visitDateLabel, visitorsLabel, visitorsOptions[], messageLabel, messagePlaceholder, submitText, submittingText, successMessage, errorMessage |
-| privacyNotice | string | Privacy notice text below form |
-| formEndpoint | string | Formspree endpoint URL |
-
-### footerConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| brandName | string | Footer brand name |
-| tagline | string | Brand tagline |
-| description | string | Brand description paragraph |
-| socialLinks | SocialLink[] | Array of { icon (string), label, href } |
-| linkGroups | FooterLinkGroup[] | Array of { title, links: [{ name, href }] } |
-| contactItems | FooterContactItem[] | Array of { icon (string), text } |
-| newsletterLabel | string | Newsletter label text |
-| newsletterPlaceholder | string | Newsletter input placeholder |
-| newsletterButtonText | string | Newsletter submit button text |
-| newsletterSuccessText | string | Success message after subscribing |
-| newsletterErrorText | string | Error message if subscription fails |
-| newsletterEndpoint | string | Formspree endpoint for newsletter |
-| copyrightText | string | Copyright notice text |
-| legalLinks | string[] | Array of legal link labels |
-| icpText | string | ICP/regulatory text |
-| backToTopText | string | Back to top button text |
-| ageVerificationText | string | Age verification disclaimer |
-
-### scrollToTopConfig
-
-| Field | Type | Description |
-|-------|------|-------------|
-| ariaLabel | string | Accessibility label for the scroll-to-top button |
-
-## Required Images
-
-Place the following images in `public/images/`:
-
-| Image | Usage |
-|-------|-------|
-| hero-banner.jpg | Hero section background |
-| wine-bottle.png | Wine showcase bottle image (transparent PNG) |
-| slider01.jpg | Winery carousel slide 1 |
-| slider02.jpg | Winery carousel slide 2 |
-| slider03.jpg | Winery carousel slide 3 |
-| museum-tab1.jpg | Museum tab 1 image |
-| museum-tab2.jpg | Museum tab 2 image |
-| museum-tab3.jpg | Museum tab 3 image |
-| museum.jpg | Story section image |
-| news01.jpg | News article 1 image |
-| news02.jpg | News article 2 image |
-| news03.jpg | News article 3 image |
-| photo-retro.png | Museum founder photo |
-
-## Design
-
-### Colors
-
-- **Gold palette**: #d2a855 (primary), #dbb977, #e4cb99, #a88644, #7e6533
-- **Wine/dark palette**: #141414 (page bg), #0e0e0e, #070707, #1d1d1d
-- **Accent**: #c71717 (red)
-
-### Fonts
-
-- **Cormorant Garamond** (serif) - headings and display text
-- **Poppins** (sans-serif) - body text
-- **Qwitcher Grypen** (script/cursive) - decorative accents
-
-### Animations
-
-- Scroll-triggered entrance animations (fade-up, slide-in-left, slide-in-right, scale-in)
-- Ken Burns effect on hero and carousel images
-- Count-up statistics in hero
-- Staggered reveal sequence in hero (bg -> title -> CTA -> stats)
-- Preloader with fade-in/fade-out sequence
-
-## Notes
-
-- All components check for empty config and render nothing if unconfigured
-- The `language` field in siteConfig should be set to `""` in the template and populated when deploying
-- Icon fields in config use string names (e.g. "Wine", "MapPin") that are resolved via icon lookup maps in each component
-- The contact form and newsletter use Formspree endpoints - replace with your own form IDs
-- Images should be optimized for web (JPG for photos, PNG for transparent images)
+项目早期从通用模板改造而来，`src/config.ts`、`src/sections/*` 与 `info.md` 属于历史模板参考内容，当前主应用不导入这些 section。保留它们是为了避免仓库历史和文档说明断裂，不参与国赛主页面运行。

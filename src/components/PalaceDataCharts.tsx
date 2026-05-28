@@ -752,6 +752,12 @@ export function PalaceDataChartsSection({ onOpenPainting }: { onOpenPainting?: (
             图表围绕材作、屋顶形制、斗栱传力、彩画类型与宫殿体量展开，配色延续宫墙朱红、琉璃明黄、边框暗金、徽墨黑、点翠绿与霁蓝。
             可结合《万历的紫禁城》《中国建筑史》等文献理解古建筑营造体系。
           </p>
+          <div className="mx-auto mt-4 max-w-4xl rounded-lg border border-[#CDBA96]/80 bg-[#fffaf0]/75 px-4 py-3 text-left shadow-sm">
+            <p className="text-sm leading-relaxed text-[#1A1A1A]/82">
+              <span className="mr-2 font-semibold tracking-[0.12em] text-[#8B2323]">可视化说明</span>
+              本作品部分图表为知识结构与建筑等级关系的可视化表达，用于辅助理解紫禁城古建筑营造逻辑；其中涉及的类型、等级、构造关系依据公开资料与文献整理，不作为精确统计数据使用。
+            </p>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-6 lg:grid-cols-4 lg:gap-7">

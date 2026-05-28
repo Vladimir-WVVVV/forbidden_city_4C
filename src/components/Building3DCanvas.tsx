@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Html, OrbitControls, useGLTF } from '@react-three/drei';
 import { Suspense, useLayoutEffect, useMemo, useRef } from 'react';
+import { ErrorBoundary } from './ErrorBoundary';
 
 /** 与 App 中 HotspotData 兼容的最小字段 */
 export type BuildingHotspotPick = {
@@ -191,26 +192,43 @@ function SceneContent(props: Building3DCanvasProps) {
   );
 }
 
+function ModelLoading() {
+  return (
+    <Html center>
+      <div className="model-loading-state">角楼三维模型加载中……</div>
+    </Html>
+  );
+}
+
 export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }: Building3DCanvasProps) {
   return (
     <div className="building-3d-view relative h-full w-full min-h-0">
       <div className="absolute inset-0 h-full w-full min-h-[200px]">
-        <Canvas
-          shadows
-          className="block h-full w-full"
-          style={{ width: '100%', height: '100%' }}
-          camera={{ position: [4, 2.8, 5.4], fov: 55, near: 0.1, far: 1000 }}
-          gl={{ antialias: true, alpha: false }}
-          resize={{ debounce: 0, scroll: false, offsetSize: true }}
+        <ErrorBoundary
+          resetKey={selectedHotspotId ?? 'model'}
+          fallback={
+            <div className="model-error-state" role="alert">
+              三维模型暂时加载失败，请刷新页面或稍后重试。
+            </div>
+          }
         >
-          <Suspense fallback={null}>
-            <SceneContent
-              hotspots={hotspots}
-              onHotspotClick={onHotspotClick}
-              selectedHotspotId={selectedHotspotId}
-            />
-          </Suspense>
-        </Canvas>
+          <Canvas
+            shadows
+            className="block h-full w-full"
+            style={{ width: '100%', height: '100%' }}
+            camera={{ position: [4, 2.8, 5.4], fov: 55, near: 0.1, far: 1000 }}
+            gl={{ antialias: true, alpha: false }}
+            resize={{ debounce: 0, scroll: false, offsetSize: true }}
+          >
+            <Suspense fallback={<ModelLoading />}>
+              <SceneContent
+                hotspots={hotspots}
+                onHotspotClick={onHotspotClick}
+                selectedHotspotId={selectedHotspotId}
+              />
+            </Suspense>
+          </Canvas>
+        </ErrorBoundary>
       </div>
       <div className="view-controls pointer-events-none">
         <span className="control-hint">点击金色光点查看详情 | 拖拽旋转 | 滚轮缩放</span>
@@ -219,4 +237,3 @@ export function Building3DCanvas({ hotspots, onHotspotClick, selectedHotspotId }
   );
 }
 
-useGLTF.preload(CORNER_TOWER_MODEL_URL);

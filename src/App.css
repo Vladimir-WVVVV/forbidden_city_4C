@@ -105,9 +105,18 @@ html, body, #root {
 .intro-subtitle {
   font-size: clamp(1rem, 2vw, 1.5rem);
   letter-spacing: 0.3em;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   opacity: 0.9;
   color: var(--color-gold-light);
+}
+
+.intro-positioning {
+  max-width: 760px;
+  margin: 0 auto 2rem;
+  font-size: clamp(1rem, 2vw, 1.28rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
 }
 
 .intro-button {
@@ -155,6 +164,26 @@ html, body, #root {
 
 .intro-button:hover .button-icon {
   transform: translateX(5px);
+}
+
+.intro-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 1.6rem auto 0;
+  max-width: 780px;
+}
+
+.intro-highlights span {
+  border: 1px solid rgba(212, 175, 55, 0.72);
+  border-radius: 999px;
+  background: rgba(20, 12, 8, 0.42);
+  color: #fff6d8;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.92rem;
+  letter-spacing: 0.08em;
+  backdrop-filter: blur(6px);
 }
 
 .intro-footer {
@@ -347,6 +376,24 @@ html, body, #root {
   transition: transform 180ms ease, background-color 180ms ease;
 }
 
+.building-marker--3d .marker-core {
+  background: #c41e3a;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.82), 0 0 18px rgba(212, 175, 55, 0.72);
+}
+
+.building-marker--image .marker-core {
+  background: #6f3f1d;
+}
+
+.building-marker--placeholder {
+  opacity: 0.62;
+}
+
+.building-marker--placeholder .marker-core {
+  background: #7c7c7c;
+  border-color: rgba(255, 255, 255, 0.72);
+}
+
 .building-marker:hover .marker-core,
 .building-marker.hovered .marker-core,
 .building-marker:focus-visible .marker-core {
@@ -441,6 +488,139 @@ html, body, #root {
 .building-marker:focus-visible .marker-desc {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
+}
+
+.marker-card {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%) translateY(4px);
+  width: min(260px, 72vw);
+  border-radius: 8px;
+  background: rgba(26, 20, 14, 0.94);
+  border: 1px solid rgba(212, 175, 55, 0.65);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+  padding: 0.8rem;
+  text-align: left;
+  color: #fff8e6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.marker-card strong,
+.marker-card em,
+.marker-card small {
+  display: block;
+}
+
+.marker-card strong {
+  font-size: 1rem;
+  color: #f8d879;
+  letter-spacing: 0.08em;
+}
+
+.marker-card em {
+  margin-top: 0.24rem;
+  font-style: normal;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.marker-card small {
+  margin-top: 0.45rem;
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.marker-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.55rem;
+}
+
+.marker-badges b {
+  border-radius: 999px;
+  background: rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(212, 175, 55, 0.45);
+  padding: 0.18rem 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.building-marker:hover .marker-card,
+.building-marker.hovered .marker-card,
+.building-marker:focus-visible .marker-card {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.demo-route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 32rem);
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(90deg, #fff8e8, #f6eddb);
+  color: var(--color-ink);
+}
+
+.demo-route-kicker {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: var(--color-primary-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.demo-route p,
+.demo-route strong {
+  font-size: 0.88rem;
+  line-height: 1.8;
+}
+
+.demo-route strong {
+  color: #6d291c;
+  font-weight: 600;
+}
+
+.source-note {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem 1rem;
+  align-items: start;
+  margin: 0;
+  padding: 0.85rem 2rem;
+  border-bottom: 1px solid rgba(212, 196, 176, 0.78);
+  background:
+    linear-gradient(90deg, rgba(255, 250, 240, 0.96), rgba(246, 237, 219, 0.9)),
+    var(--color-paper);
+  color: var(--color-ink);
+}
+
+.source-note-title {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 175, 55, 0.58);
+  background: rgba(212, 175, 55, 0.12);
+  padding: 0.24rem 0.68rem;
+  color: var(--color-primary-dark);
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+.source-note-text {
+  color: rgba(26, 26, 26, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.7;
 }
 
 .map-footer {
@@ -551,6 +731,28 @@ html, body, #root {
   color: var(--color-gray);
 }
 
+.ancient-guide-type {
+  width: fit-content;
+  margin-top: 0.18rem;
+  border-radius: 999px;
+  padding: 0.15rem 0.48rem;
+  border: 1px solid rgba(139, 0, 0, 0.16);
+  background: rgba(139, 0, 0, 0.07);
+  color: var(--color-primary-dark);
+  font-size: 0.68rem;
+}
+
+.ancient-guide-type--3d {
+  border-color: rgba(212, 175, 55, 0.8);
+  background: rgba(212, 175, 55, 0.18);
+}
+
+.ancient-guide-type--placeholder {
+  border-color: rgba(107, 107, 107, 0.28);
+  background: rgba(107, 107, 107, 0.08);
+  color: var(--color-gray);
+}
+
 /* =============================================================================
    详情页样式
    ============================================================================= */
@@ -625,6 +827,50 @@ html, body, #root {
   font-size: 1rem;
   color: var(--color-gray);
   letter-spacing: 0.05em;
+}
+
+.detail-type-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  padding: 0.28rem 0.72rem;
+  color: var(--color-primary-dark);
+  background: rgba(255, 255, 255, 0.65);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.detail-type-badge--3d {
+  border-color: rgba(212, 175, 55, 0.9);
+  background: rgba(212, 175, 55, 0.16);
+}
+
+.reading-guide {
+  border: 1px solid rgba(212, 196, 176, 0.85);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 1rem;
+}
+
+.reading-guide h3 {
+  margin-bottom: 0.65rem;
+  color: var(--color-primary-dark);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.reading-guide div {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.reading-guide span {
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  line-height: 1.65;
 }
 
 .divider {
@@ -1070,6 +1316,41 @@ html, body, #root {
   color: var(--reading-theme);
   padding: 0.28rem 0.55rem;
   font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.hotspot-progress-panel {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid rgba(212, 175, 55, 0.55);
+  border-radius: 8px;
+  background: rgba(255, 250, 235, 0.82);
+  padding: 1rem;
+}
+
+.hotspot-progress-panel div {
+  display: grid;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.hotspot-progress-panel span {
+  color: var(--color-gray);
+  font-size: 0.78rem;
+}
+
+.hotspot-progress-panel strong {
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.hotspot-progress-panel p {
+  margin-top: 0.25rem;
+  border-top: 1px solid rgba(212, 196, 176, 0.75);
+  padding-top: 0.65rem;
+  color: var(--color-primary-dark);
   font-weight: 700;
 }
 
@@ -1812,6 +2093,130 @@ html, body, #root {
    响应式设计
    ============================================================================= */
 
+.image-fallback-message,
+.model-error-state,
+.model-loading-state,
+.image-detail-empty,
+.error-boundary-fallback {
+  display: grid;
+  place-items: center;
+  min-height: 12rem;
+  height: 100%;
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--color-primary-dark);
+  background: rgba(250, 248, 243, 0.92);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.model-loading-state {
+  min-width: 12rem;
+  height: auto;
+  background: rgba(250, 248, 243, 0.94);
+  box-shadow: var(--shadow-soft);
+}
+
+.image-fallback-message {
+  position: absolute;
+  inset: 1rem;
+  z-index: 4;
+}
+
+.ai-mode-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ai-mode-btn {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--color-gray);
+  padding: 0.32rem 0.72rem;
+  font-family: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.ai-mode-btn:hover,
+.ai-mode-btn.active {
+  border-color: var(--color-gold);
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--color-primary-dark);
+}
+
+.placeholder-detail {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  padding: 2rem;
+  background:
+    linear-gradient(120deg, rgba(250, 248, 243, 0.92), rgba(245, 240, 232, 0.82)),
+    url('/images/shenwu-gate.jpg') center / cover;
+}
+
+.placeholder-detail-copy {
+  max-width: 680px;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 8px;
+  background: rgba(250, 248, 243, 0.95);
+  box-shadow: var(--shadow-medium);
+  padding: 2rem;
+  text-align: center;
+}
+
+.placeholder-detail-copy span {
+  color: var(--color-primary-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.placeholder-detail-copy h1 {
+  margin-top: 0.7rem;
+  color: var(--color-primary-dark);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+}
+
+.placeholder-detail-copy p {
+  margin-top: 1rem;
+  color: var(--color-ink);
+  line-height: 1.9;
+}
+
+.placeholder-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-top: 1.6rem;
+}
+
+.primary-action,
+.secondary-action {
+  border-radius: 8px;
+  padding: 0.72rem 1.1rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.primary-action {
+  border: 1px solid var(--color-primary-dark);
+  background: var(--color-primary-dark);
+  color: white;
+}
+
+.secondary-action {
+  border: 1px solid var(--color-border);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--color-primary-dark);
+}
+
 @media (max-width: 1200px) {
   .specs-grid {
     grid-template-columns: 1fr;
@@ -1819,6 +2224,10 @@ html, body, #root {
 }
 
 @media (max-width: 768px) {
+  html, body, #root {
+    overflow-x: hidden;
+  }
+
   .detail-content {
     flex-direction: column;
     overflow-y: auto;
@@ -1841,10 +2250,77 @@ html, body, #root {
   .intro-title {
     letter-spacing: 0.2em;
   }
+
+  .intro-content {
+    width: 100%;
+    padding: 1.5rem 1rem;
+  }
+
+  .intro-positioning {
+    margin-bottom: 1.4rem;
+  }
+
+  .intro-highlights {
+    gap: 0.5rem;
+  }
+
+  .intro-highlights span {
+    font-size: 0.78rem;
+    padding: 0.38rem 0.62rem;
+  }
   
   .intro-button {
     padding: 0.875rem 2rem;
     font-size: 1rem;
+  }
+
+  .intro-footer {
+    padding: 1rem;
+    gap: 0.75rem;
+    flex-direction: column;
+    font-size: 0.72rem;
+  }
+
+  .footer-right {
+    text-align: left;
+  }
+
+  .map-container {
+    height: auto;
+    min-height: 360px;
+    padding: 1rem 0;
+  }
+
+  .map-frame {
+    width: min(100vw, 680px);
+    height: min(72vw, 360px);
+  }
+
+  .marker-label {
+    min-height: 58px;
+    min-width: 28px;
+  }
+
+  .marker-name {
+    font-size: 0.72rem;
+  }
+
+  .marker-card {
+    display: none;
+  }
+
+  .demo-route {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+  }
+
+  .source-note {
+    grid-template-columns: 1fr;
+    padding: 0.9rem 1rem;
+  }
+
+  .source-note-text {
+    font-size: 0.86rem;
   }
   
   .panel-overview,
@@ -1882,6 +2358,11 @@ html, body, #root {
 
   .hotspot-reading-main {
     padding: 0 1rem 1rem;
+  }
+
+  .hotspot-progress-panel div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
   }
 
   .building-image-hotspot {
@@ -1938,6 +2419,22 @@ html, body, #root {
 
   .hotspot-preview-copy {
     padding: 0 1rem 1rem;
+  }
+
+  .ai-guide-panel textarea {
+    min-width: 0;
+  }
+
+  .ai-mode-btn {
+    flex: 1 1 auto;
+  }
+
+  .placeholder-detail {
+    padding: 1rem;
+  }
+
+  .placeholder-detail-copy {
+    padding: 1.35rem;
   }
 }
 

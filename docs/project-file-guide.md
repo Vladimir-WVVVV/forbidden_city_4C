@@ -1,17 +1,21 @@
-﻿# 项目文件导览
+# 紫禁营造志项目文件导览
 
-本文档用于帮助后续 AI 或开发者快速理解当前项目：它在做什么、如何运行、核心代码在哪里、每个主要目录和文件承担什么职责。
+本文档用于帮助后续 AI、开发者和参赛队友快速理解当前项目结构、运行方式、核心文件职责和国赛展示逻辑。
 
 ## 项目概览
 
-这是一个以“故宫建筑细节交互”为主题的单页 Web 应用。当前主线不是原模板中的酒庄页面，而是一个故宫/紫禁城导览体验：
+“紫禁营造志”是一个以紫禁城建筑细节交互为主题的单页 Web 应用，面向计算机设计大赛国赛展示。项目采用“重点样本深度识读 + 多建筑图文导览 + 专题可视化扩展 + AI 辅助讲解”的结构。
 
-- 入口页展示故宫风格背景与进入按钮。
-- 地图页使用本地故宫导览图，并在指定建筑点位上放置可点击标记。
-- 详情页以故宫角楼为核心，左侧展示建筑概览、热点构件说明、实景图/线稿图、技术参数和文化意义。
-- 右侧使用 Three.js/R3F 加载 `corner-tower.glb` 三维模型，并显示可点击热点。
-- 数据可视化区使用 ECharts 展示古建筑营造、木材、屋顶、彩画等示意图表，并可进入“故宫彩画专题”页面。
-- AI 讲解面板会把当前建筑、热点和页面上下文发送给本地 Express 代理，再调用腾讯云混元接口生成中文讲解。
+当前内容结构：
+
+- 首页：展示项目主题、项目定位语“从一座城，到一处构件：用交互可视化读懂紫禁城营造智慧。”和四个核心亮点标签。
+- 地图页：使用本地故宫导览图，展示建筑点位、资料来源、推荐演示路线。
+- 东北角楼：当前唯一 3D 深度探索样本，支持三维模型、热点识读、线稿/实景对照、AI 讲解。
+- 午门、太和殿、乾清宫、文华殿、武英殿：图文导览建筑，展示主图、基础介绍、空间功能和文化意义。
+- 神武门：当前不再展示地图点位，之前的 placeholder 示例已删除。
+- 图表区：“紫禁数读：古建筑营造密码”，展示古建筑营造、木材、屋顶、彩画等专题可视化。
+- 彩画专题：作为专题知识扩展页面。
+- AI 讲解：前端请求 `/api/hunyuan`，由本地或线上 Express 代理调用腾讯混元兼容接口。
 
 ## 技术栈
 
@@ -20,9 +24,52 @@
 - 动画：GSAP、CSS animation
 - 3D：Three.js、@react-three/fiber、@react-three/drei
 - 图表：ECharts、echarts-for-react
-- 后端代理：Express、腾讯云 Hunyuan SDK、dotenv、cors
+- 后端代理：Express、dotenv、cors、TokenHub/OpenAI-compatible 混元接口
 
-## 常用命令
+## 建筑类型与详情页逻辑
+
+当前建筑详情通过 `detailType` 区分：
+
+```ts
+detailType: "3d" | "image" | "placeholder"
+```
+
+当前实际展示：
+
+| 建筑 | detailType | 展示方式 |
+| --- | --- | --- |
+| 东北角楼 | `3d` | 3D 模型、热点识读、线稿/实景对照、AI 讲解 |
+| 午门 | `image` | 图文导览 |
+| 太和殿 | `image` | 图文导览 |
+| 乾清宫 | `image` | 图文导览 |
+| 文华殿 | `image` | 图文导览 |
+| 武英殿 | `image` | 图文导览 |
+
+重要说明：
+
+- 只有 `detailType === "3d"` 时才挂载 `Building3DCanvas`。
+- 只有东北角楼会加载 `/models/corner-tower.glb`。
+- 图片建筑不会请求 `corner-tower.glb`。
+- placeholder 类型逻辑可以保留，但当前地图不展示神武门入口。
+- 不要把所有建筑误写成 3D 模型展示。
+
+## 运行链路
+
+1. `index.html` 提供根节点 `#root`。
+2. `src/main.tsx` 挂载 React 应用。
+3. `src/App.tsx` 控制核心页面状态：`intro`、`map`、`detail`、`painting`。
+4. 首页进入地图页。
+5. 地图页点击建筑点位后，根据建筑 `detailType` 进入不同详情：
+   - `3d`：东北角楼 3D 深度详情页。
+   - `image`：图片图文详情页。
+   - `placeholder`：建设中提示页。
+6. 东北角楼详情页挂载 `Building3DCanvas`，加载 `/models/corner-tower.glb`。
+7. 图片建筑详情页使用 `BuildingImageHotspot` 等图文逻辑，不加载 3D。
+8. AI 面板向 `/api/hunyuan` 发送当前建筑、热点和上下文，由 `server.cjs` 代理调用腾讯混元兼容接口。
+9. 图表区由 `PalaceDataCharts` 渲染，并包含可视化说明。
+10. 彩画专题通过页面状态进入独立专题视图。
+
+## 本地运行与常用命令
 
 ```bash
 npm run dev
@@ -34,192 +81,207 @@ npm run preview
 npm run lint
 ```
 
-开发时通常需要两个进程：
+本地开发时，如果要使用 AI 讲解功能，需要同时启动两个进程：
 
-- `npm run server`：启动本地 `/api/hunyuan` 代理，默认端口 `3001`。
-- `npm run dev`：启动 Vite 前端。Vite 会把 `/api` 代理到 `http://127.0.0.1:3001`。
-- `npm run dev:lan`：以 `0.0.0.0` 启动 Vite，便于同一局域网设备访问。
+```bash
+npm run server
+```
 
-混元接口需要复制 `.env.example` 为 `.env`，并填写 `TENCENT_SECRET_ID`、`TENCENT_SECRET_KEY` 等服务端环境变量。完整运行和部署说明见 `docs/run-and-deploy.md`。
+用于启动本地 Express 代理，默认监听 `3001`，提供 `/api/hunyuan`。
 
-## 运行链路
+```bash
+npm run dev
+```
 
-1. `index.html` 提供根节点 `#root`。
-2. `src/main.tsx` 挂载 React 应用。
-3. `src/App.tsx` 控制页面状态：`intro`、`map`、`detail`、`painting`。
-4. 地图页选择建筑后进入详情页。
-5. 详情页把热点数据传入 `Building3DCanvas`；用户点击三维热点后，左侧展示对应构件说明。
-6. `HotspotDetailCards` 负责把热点详情、技术参数和文化意义折叠展示。
-7. `AiGuidePanel` 向 `/api/hunyuan` 发送问题、建筑名、热点名和上下文。
-8. `server.cjs` 调用腾讯云混元，再把结果返回前端。
+用于启动 Vite 前端开发服务。Vite 会把 `/api` 请求代理到 `http://127.0.0.1:3001`。
+
+如果只运行 `npm run dev` 而没有运行 `npm run server`，AI 请求会失败，并在终端出现类似：
+
+```text
+[vite] http proxy error: /api/hunyuan
+Error: connect ECONNREFUSED 127.0.0.1:3001
+```
+
+这不是 AI 逻辑坏了，而是本地后端代理没有启动。线上 Render 等 Node 平台部署时，`server.cjs` 会托管构建产物并处理 `/api/hunyuan`，所以线上不需要像本地一样手动开两个终端。
+
+## AI 讲解与环境变量
+
+`src/components/AiGuidePanel.tsx` 负责输入问题、展示示例问题、提交 `/api/hunyuan` 请求、展示 AI 返回结果或错误提示。
+
+`server.cjs` 是 Express 后端代理，负责读取服务端环境变量，调用腾讯混元兼容接口，并返回前端可展示的讲解文本。AI 密钥只应存在服务端 `.env` 或部署平台环境变量中，不应写入 `src`、`public` 或前端代码。本地 `.env` 不应提交到仓库。
+
+当前 `server.cjs` 实际读取的环境变量：
+
+```env
+HUNYUAN_API_KEY=your_tokenhub_api_key_here
+HUNYUAN_BASE_URL=https://tokenhub.tencentmaas.com/v1
+HUNYUAN_MODEL=hunyuan-2.0-instruct-20251111
+PORT=3001
+HOST=0.0.0.0
+CORS_ORIGIN=
+```
+
+`.env.example` 应只保留占位符，不要写真实 key。
 
 ## 顶层文件
 
 | 文件 | 作用 |
 | --- | --- |
-| `.env` | 本地服务端环境变量。包含腾讯云密钥等敏感配置，不应提交到仓库。 |
-| `.env.example` | 环境变量示例。用于提示混元代理所需的密钥、模型、地区、端口等配置。 |
-| `.gitattributes` | Git 属性配置，主要用于统一文本文件处理规则。 |
+| `.env` | 本地服务端环境变量，包含密钥等敏感配置，不应提交。 |
+| `.env.example` | 环境变量示例，与 `server.cjs` 当前读取变量保持一致，只使用占位符。 |
+| `.gitattributes` | Git 属性配置。 |
 | `.gitignore` | Git 忽略规则。 |
-| `components.json` | shadcn/ui 配置，定义组件风格、别名、Tailwind CSS 文件、图标库等。 |
-| `eslint.config.js` | ESLint 配置，用于检查 TypeScript/React 代码质量。 |
-| `index.html` | Vite HTML 入口，包含根节点和页面基础元信息。 |
-| `info.md` | 原 Villa Template 的说明文档。当前项目已改造成故宫主题，主要作为历史模板参考。 |
+| `components.json` | shadcn/ui 配置。 |
+| `eslint.config.js` | ESLint 配置。 |
+| `index.html` | Vite HTML 入口，包含根节点 `#root`。 |
+| `info.md` | 原 Villa Template 说明文档，当前作为历史模板参考，不参与主应用。 |
 | `package.json` | 项目依赖、脚本和包元数据。 |
-| `package-lock.json` | npm 锁文件，记录依赖的确定版本。 |
-| `postcss.config.js` | PostCSS 配置，用于 Tailwind CSS 和 autoprefixer。 |
-| `README.md` | 项目说明。顶部说明混元 AI 讲解代理接入，后面仍保留 Villa Template 的部分原始说明。 |
-| `server.cjs` | Express 后端代理。提供 `POST /api/hunyuan`，读取 `.env` 密钥，调用腾讯云混元，并在存在 `dist` 时托管构建产物。 |
-| `tailwind.config.js` | Tailwind 配置。包含 shadcn 变量色、旧模板色板、故宫 imperial 色板、字体、动画等扩展。 |
-| `tsconfig.json` | TypeScript 根配置，引用 app/node 两套 tsconfig。 |
-| `tsconfig.app.json` | 前端应用 TypeScript 编译配置。 |
-| `tsconfig.node.json` | Node/Vite 配置文件的 TypeScript 编译配置。 |
-| `vite.config.ts` | Vite 配置。启用 React 插件、Kimi inspect 插件、`@` 别名，并代理 `/api` 到 `127.0.0.1:3001`。 |
+| `package-lock.json` | npm 锁文件。 |
+| `postcss.config.js` | PostCSS 配置。 |
+| `README.md` | 当前项目说明文档。 |
+| `server.cjs` | Express 后端代理，提供 `POST /api/hunyuan`，存在 `dist` 时托管构建产物。 |
+| `tailwind.config.js` | Tailwind 配置，包含色板、字体、动画等扩展。 |
+| `tsconfig.json` | TypeScript 根配置。 |
+| `tsconfig.app.json` | 前端应用 TypeScript 配置。 |
+| `tsconfig.node.json` | Node/Vite 配置文件 TypeScript 配置。 |
+| `vite.config.ts` | Vite 配置，设置 React 插件、别名、开发端口和 `/api` 代理。 |
 
 ## `docs` 目录
 
 | 文件 | 作用 |
 | --- | --- |
-| `docs/project-file-guide.md` | 当前文件。面向后续维护者的项目结构导览。 |
-| `docs/run-and-deploy.md` | 运行与部署说明，覆盖本地局域网访问、构建后一体化运行、Node 平台上线和环境变量配置。 |
+| `docs/project-file-guide.md` | 当前文件，项目结构与运行导览。 |
+| `docs/run-and-deploy.md` | 运行与部署说明。 |
+| `docs/judge-deployment-guide.md` | 评审/展示部署相关说明。 |
+| `docs/building-hotspots-and-images-checklist*.md` | 建筑热点与图片素材检查记录。 |
+| `docs/taihe-dian.md`、`docs/wumen.md`、`docs/wenhua-dian.md`、`docs/wuying-dian.md` | 建筑资料文档或整理稿。 |
 
 ## `src` 目录
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/main.tsx` | React 入口。引入 `index.css`，把 `App` 渲染到 `#root`。 |
-| `src/App.tsx` | 当前核心应用文件。定义页面状态、故宫地图点位、建筑数据、角楼热点数据、入口页、地图页、详情页和文化数据区域。也是当前业务数据最集中的地方。 |
-| `src/App.css` | 当前故宫交互应用的主要样式文件。覆盖入口页、地图页、详情页、三维视图、热点标记、导航、折叠卡片和响应式布局等。 |
-| `src/index.css` | 全局 CSS。导入字体，启用 Tailwind 层，保留模板基础变量、按钮、动画和字体工具类等。 |
-| `src/config.ts` | 原 Villa Template 的集中配置类型与空配置值。当前主应用 `App.tsx` 不依赖它，但 `src/sections` 和部分旧组件仍会读取它。 |
+| `src/main.tsx` | React 入口，引入 `index.css`，把 `App` 渲染到 `#root`。 |
+| `src/App.tsx` | 核心业务入口。负责页面状态控制、首页、地图页、详情页、彩画专题入口、建筑点位数据、建筑详情数据、`detailType` 分支、东北角楼 3D 深度样本逻辑、图片建筑图文导览逻辑、资料来源信息条和推荐演示路线。 |
+| `src/App.css` | 主要样式文件。负责首页视觉、地图点位、分类标签、hover 卡片、资料来源模块、推荐演示路线、详情页布局、3D 深度页、图片详情页和响应式布局。 |
+| `src/index.css` | 全局 CSS，导入字体、Tailwind 层和旧模板基础工具样式。 |
+| `src/config.ts` | 原 Villa Template 集中配置。当前主 `App.tsx` 不依赖它，主要供旧 `src/sections/*` 使用。 |
 
 ## `src/components` 目录
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/components/AiGuidePanel.tsx` | AI 讲解面板。维护输入、加载、回答和错误状态；向 `/api/hunyuan` 发送问题、建筑、热点、上下文；展示示例问题和生成结果。 |
-| `src/components/Building3DCanvas.tsx` | 三维角楼展示组件。加载 `/models/corner-tower.glb`，归一化模型尺寸，使用 R3F Canvas、OrbitControls、灯光和热点球体/HTML 标签，支持点击热点回传给详情页。 |
-| `src/components/HotspotDetailCards.tsx` | 热点详情折叠卡片组件。把构件说明、技术参数和文化意义拆成可展开/收起的卡片，降低详情页左侧信息密度。 |
-| `src/components/PalaceDataCharts.tsx` | 故宫数据可视化组件。定义配色、mock 数据、多个 ECharts option 工厂、懒加载图表、地图页图表区，以及“故宫彩画专题”独立页面。 |
-| `src/components/Preloader.tsx` | 原模板预加载组件。读取 `preloaderConfig`，如果没有品牌名则不渲染。当前主 `App.tsx` 未使用。 |
-| `src/components/ScrollToTop.tsx` | 原模板返回顶部按钮。读取 `scrollToTopConfig`，配置为空则不渲染。当前主 `App.tsx` 未使用。 |
+| `src/components/AiGuidePanel.tsx` | AI 问答面板。负责输入问题、示例问题、请求 `/api/hunyuan`、展示混元返回结果或错误提示。上下文来自当前建筑、热点和页面资料；本地开发依赖 `npm run server` 提供代理。 |
+| `src/components/Building3DCanvas.tsx` | 只用于东北角楼。加载 `/models/corner-tower.glb`，提供 R3F Canvas、OrbitControls、灯光和热点；普通图片建筑不会挂载它；模型加载失败时有兜底提示。 |
+| `src/components/BuildingImageHotspot.tsx` | 用于图片建筑或图文热点展示。主图懒加载，图片加载失败有兜底提示，不加载 3D 模型。 |
+| `src/components/HotspotDetailCards.tsx` | 展示构件说明、技术参数、文化意义等折叠内容。主要服务于东北角楼热点详情，也可支持图文详情模块。 |
+| `src/components/PalaceDataCharts.tsx` | 渲染“紫禁数读：古建筑营造密码”图表区和彩画专题页。当前包含可视化说明；图表用于知识结构和建筑等级关系可视化表达，部分图表不作为精确统计数据使用。 |
+| `src/components/ErrorBoundary.tsx` | 基础错误边界，避免局部组件异常导致整页白屏。 |
+| `src/components/Preloader.tsx` | 原模板预加载组件，当前主 `App.tsx` 未使用。 |
+| `src/components/ScrollToTop.tsx` | 原模板返回顶部按钮，当前主 `App.tsx` 未使用。 |
 
 ## `src/components/ui` 目录
 
-这是 shadcn/ui 风格的通用 UI 组件库，保留了大量可复用基础组件。它们通常封装 Radix UI、Lucide 图标、Tailwind class 和本地工具函数 `cn`。
-
-| 文件 | 作用 |
-| --- | --- |
-| `accordion.tsx` | 手风琴折叠面板组件。 |
-| `alert-dialog.tsx` | 需要用户确认的弹窗对话框。 |
-| `alert.tsx` | 提示/警告信息块。 |
-| `aspect-ratio.tsx` | 固定宽高比容器。 |
-| `avatar.tsx` | 用户头像组件。 |
-| `badge.tsx` | 状态标签/徽章。 |
-| `breadcrumb.tsx` | 面包屑导航。 |
-| `button-group.tsx` | 按钮组容器。 |
-| `button.tsx` | 通用按钮组件与样式变体。 |
-| `calendar.tsx` | 日期选择日历。 |
-| `card.tsx` | 卡片容器组件。 |
-| `carousel.tsx` | 轮播组件。 |
-| `chart.tsx` | 图表容器/主题辅助组件，常用于 Recharts 风格图表。 |
-| `checkbox.tsx` | 复选框。 |
-| `collapsible.tsx` | 折叠内容容器。 |
-| `command.tsx` | 命令面板/搜索选择组件。 |
-| `context-menu.tsx` | 右键上下文菜单。 |
-| `dialog.tsx` | 通用弹窗对话框。 |
-| `drawer.tsx` | 抽屉面板。 |
-| `dropdown-menu.tsx` | 下拉菜单。 |
-| `empty.tsx` | 空状态展示。 |
-| `field.tsx` | 表单字段布局辅助组件。 |
-| `form.tsx` | React Hook Form 集成组件。 |
-| `hover-card.tsx` | 悬停展示卡片。 |
-| `input-group.tsx` | 输入框组合布局。 |
-| `input-otp.tsx` | OTP/验证码输入。 |
-| `input.tsx` | 基础输入框。 |
-| `item.tsx` | 列表项/菜单项风格组件。 |
-| `kbd.tsx` | 键盘按键样式。 |
-| `label.tsx` | 表单标签。 |
-| `menubar.tsx` | 菜单栏。 |
-| `navigation-menu.tsx` | 顶部导航菜单。 |
-| `pagination.tsx` | 分页组件。 |
-| `popover.tsx` | 浮层组件。 |
-| `progress.tsx` | 进度条。 |
-| `radio-group.tsx` | 单选组。 |
-| `resizable.tsx` | 可拖拽调整尺寸的面板。 |
-| `scroll-area.tsx` | 自定义滚动区域。 |
-| `select.tsx` | 下拉选择器。 |
-| `separator.tsx` | 分隔线。 |
-| `sheet.tsx` | 侧边弹层。 |
-| `sidebar.tsx` | 侧边栏组件。 |
-| `skeleton.tsx` | 骨架屏占位。 |
-| `slider.tsx` | 滑块。 |
-| `sonner.tsx` | Toast 通知容器。 |
-| `spinner.tsx` | 加载中旋转图标。 |
-| `switch.tsx` | 开关。 |
-| `table.tsx` | 表格组件。 |
-| `tabs.tsx` | 标签页。 |
-| `textarea.tsx` | 多行文本输入。 |
-| `toggle-group.tsx` | 多按钮切换组。 |
-| `toggle.tsx` | 单个切换按钮。 |
-| `tooltip.tsx` | 提示气泡。 |
+这是 shadcn/ui 风格的通用 UI 组件库，通常封装 Radix UI、Lucide 图标、Tailwind class 和本地工具函数 `cn`。当前主流程主要使用少量组件和工具，目录中的大量组件属于通用资产。
 
 ## `src/sections` 目录
 
-这些文件来自原 Villa Template，当前主 `App.tsx` 没有导入它们。它们仍可作为模板素材或后续复用的页面段落。
+这些文件来自原 Villa Template，当前主 `App.tsx` 没有导入它们。它们仍可作为历史模板参考或后续复用素材。
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/sections/Navigation.tsx` | 原模板导航栏。读取 `navigationConfig`，支持桌面导航、下拉、移动菜单。 |
-| `src/sections/Hero.tsx` | 原模板首屏 Hero。读取 `heroConfig`，支持背景图、标题、CTA、统计数字。 |
-| `src/sections/WineShowcase.tsx` | 原模板酒品展示区。读取 `wineShowcaseConfig`，支持酒款 tab、瓶身效果、特性卡片和引用文案。 |
-| `src/sections/WineryCarousel.tsx` | 原模板酒庄/空间轮播区。读取 `wineryCarouselConfig`，支持自动轮播、背景图和地点标签。 |
-| `src/sections/Museum.tsx` | 原模板博物馆/历史区。读取 `museumConfig`，支持时间线、tab、创始人图、开放时间等。 |
-| `src/sections/News.tsx` | 原模板新闻、评价与故事区。读取 `newsConfig`。 |
-| `src/sections/ContactForm.tsx` | 原模板联系表单。读取 `contactFormConfig`，提交到配置里的 Formspree endpoint。 |
-| `src/sections/Footer.tsx` | 原模板页脚。读取 `footerConfig`，支持社交链接、链接组、订阅表单、备案文本等。 |
+| `src/sections/Navigation.tsx` | 原模板导航栏。 |
+| `src/sections/Hero.tsx` | 原模板首屏 Hero。 |
+| `src/sections/WineShowcase.tsx` | 原模板酒品展示区。 |
+| `src/sections/WineryCarousel.tsx` | 原模板酒庄/空间轮播区。 |
+| `src/sections/Museum.tsx` | 原模板博物馆/历史区。 |
+| `src/sections/News.tsx` | 原模板新闻区。 |
+| `src/sections/ContactForm.tsx` | 原模板联系表单。 |
+| `src/sections/Footer.tsx` | 原模板页脚。 |
 
 ## `src/hooks` 与 `src/lib`
 
 | 文件 | 作用 |
 | --- | --- |
-| `src/hooks/use-mobile.ts` | 响应式 hook，用于判断当前视口是否为移动端。主要供 shadcn/sidebar 等通用组件使用。 |
-| `src/lib/utils.ts` | 通用工具函数。通常包含 `cn`，用于合并 Tailwind className。当前 `App.tsx`、`AiGuidePanel.tsx`、`HotspotDetailCards.tsx` 等会用到。 |
+| `src/hooks/use-mobile.ts` | 响应式 hook，用于判断移动端，主要供通用组件使用。 |
+| `src/lib/utils.ts` | 通用工具函数，包含 `cn`，用于合并 className。 |
 
 ## `public` 目录
 
 | 路径 | 作用 |
 | --- | --- |
-| `public/models/corner-tower.glb` | 角楼三维模型，供 `Building3DCanvas` 加载。 |
-| `public/images/custom-palace-map.png` | 故宫导览底图，地图页的核心背景图。 |
-| `public/images/forbidden-city-map.jpg` | 备用/历史故宫地图素材。 |
-| `public/images/forbidden-city-guide-panorama.png` | 故宫导览/全景素材。 |
-| `public/images/nine-dragon-wall.jpg` | 入口页背景图。 |
-| `public/images/corner-tower.jpg` | 角楼图片素材。 |
-| `public/images/corner-tower-interior.jpg` | 角楼内部图片素材。 |
-| `public/images/wumen-gate.jpg` | 午门图片素材。 |
-| `public/images/taihe-dian.jpg` | 太和殿图片素材。 |
-| `public/images/qianqing-gong.jpg` | 乾清宫图片素材。 |
-| `public/images/shenwu-gate.jpg` | 神武门图片素材。 |
-| `public/images/xumizuo-line.png` | 须弥座/台基相关线稿图。 |
-| `public/images/xumizuo-exterior.png` | 须弥座/台基相关实景图。 |
-| `public/images/wuding-line.png` | 屋顶体系相关线稿图。 |
-| `public/images/wuding-exterior.png` | 屋顶体系相关实景图。 |
-| `public/images/waiqiang-exterior.png` | 外墙相关实景图。 |
+| `public/models/corner-tower.glb` | 东北角楼三维模型，只供 `Building3DCanvas` 使用。 |
+| `public/images/custom-palace-map.png` | 地图页核心底图。 |
+| `public/images/nine-dragon-wall.jpg` | 首页背景图。 |
+| `public/images/corner-tower.jpg` | 东北角楼图像素材。 |
+| `public/images/corner-tower-interior.jpg` | 东北角楼内部图片素材。 |
+| `public/images/xumizuo-line.png`、`public/images/xumizuo-exterior.png` | 东北角楼须弥座线稿/实景对照素材。 |
+| `public/images/wuding-line.png`、`public/images/wuding-exterior.png` | 东北角楼屋顶体系线稿/实景对照素材。 |
+| `public/images/waiqiang-exterior.png` | 东北角楼外墙实景素材。 |
+| `public/images/buildings/*` | 午门、太和殿、乾清宫、文华殿、武英殿等图文建筑主图和局部图。 |
+| `public/images/wumen-*.jpg`、`public/images/taihedian-*.jpg`、`public/images/qianqinggong-*.jpg` 等 | 建筑图文导览素材。 |
 
-## 构建产物与依赖目录
+注意：当前不是所有建筑都有模型。不要在文档或代码中写成“所有建筑均支持 3D”。
+
+## 资料来源
+
+地图页当前展示正式资料来源条：
+
+> 资料来源：故宫博物院官网公开资料、《故宫建筑图典》、梁思成《中国建筑史》、于倬云《紫禁城宫殿》等资料整理。
+
+## 可视化说明
+
+图表区已有统一说明：
+
+> 本作品部分图表为知识结构与建筑等级关系的可视化表达，用于辅助理解紫禁城古建筑营造逻辑；其中涉及的类型、等级、构造关系依据公开资料与文献整理，不作为精确统计数据使用。
+
+不要把当前图表描述成全部精确统计数据。
+
+## 推荐演示路线
+
+首页  
+→ 地图导览  
+→ 东北角楼 3D 深度探索  
+→ 点击屋顶 / 斗栱等构件热点  
+→ 查看线稿与实景对照  
+→ 返回图表区 / 进入彩画专题  
+→ 使用 AI 讲解
+
+东北角楼是当前三维构件识读样本，其他建筑主要提供图文导览，用于扩展紫禁城整体空间认知。该结构是“重点样本深度识读 + 多建筑图文导览 + 专题可视化扩展”。
+
+## 构建产物与部署
 
 | 路径 | 作用 |
 | --- | --- |
-| `node_modules/` | npm 安装的第三方依赖。不要手动编辑，也不应逐文件阅读。 |
-| `dist/` | `npm run build` 生成的静态构建产物。`server.cjs` 在该目录存在时会托管它。不要把源码改动直接写到这里。 |
+| `node_modules/` | npm 安装的第三方依赖，不要手动编辑。 |
+| `dist/` | `npm run build` 生成的静态构建产物。`server.cjs` 在该目录存在时会托管它。 |
+
+构建：
+
+```bash
+npm run build
+```
+
+一体化运行：
+
+```bash
+npm run start
+```
+
+部署到支持 Node 的平台时，应设置服务端环境变量，并由 `server.cjs` 同时处理静态文件和 `/api/hunyuan`。
 
 ## 当前需要特别注意的点
 
-- `src/App.tsx` 是当前项目业务核心，且包含大量静态数据。要改地图点位、建筑列表、角楼热点、详情文案，大概率从这里入手。
-- `src/components/HotspotDetailCards.tsx` 负责热点下半部分折叠信息；如果要调整详情页信息密度或展开交互，优先看这里和 `src/App.css`。
-- `src/config.ts` 和 `src/sections/*` 属于旧模板残留，不影响当前主应用，除非重新把这些 section 接回 `App.tsx`。
-- 图表数据在 `PalaceDataCharts.tsx` 中明确是 mock/示意数据；如果用于正式展示，应替换为有来源的考据数据。
-- 混元密钥只应存在服务端 `.env`，前端只请求 `/api/hunyuan`，不要把密钥写入 `src` 或 `public`。
-- Vite 配置了 `base: './'`，构建产物适合相对路径部署。
-- 本项目已有 `.gitattributes`，后续编辑中文文档时建议统一使用 UTF-8，避免终端或编辑器解码不一致造成乱码。
+1. 只有东北角楼是 3D 建筑，不要给其他建筑伪造 3D。
+2. 普通图片建筑不要请求 `corner-tower.glb`。
+3. 不要恢复神武门点位，除非后续确实补齐内容并确认要展示。
+4. 本地 AI 需要同时启动 `npm run server` 和 `npm run dev`。
+5. `.env` 不要提交，密钥不要写进前端代码。
+6. 图表数据当前包含知识结构可视化表达，不要误写为精确统计数据。
+7. `src/sections/*`、`info.md` 等旧模板残留不参与当前主应用。
+8. lint 可能仍有历史问题，集中在旧模板或 shadcn 通用组件，不代表主流程无法构建。
+9. chunk 体积警告与 Three.js、ECharts 等依赖有关，后续可通过懒加载/拆包优化。
+10. Vite 配置了 `base: './'`，构建产物适合相对路径部署。
+
+## 本次文档更新说明
+
+本次只更新文档，不修改业务代码、图表数据、AI 逻辑、3D 逻辑或样式。Markdown 文档修改通常不影响构建，通常不需要为了文档变更单独运行 `npm run build`。

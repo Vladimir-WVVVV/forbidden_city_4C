@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export type ImageHotspotPick = {
   id: string;
   name: string;
@@ -60,6 +62,7 @@ export function BuildingImageHotspot({
   selectedHotspotId,
   onSelectHotspot,
 }: BuildingImageHotspotProps) {
+  const [imageFailed, setImageFailed] = useState(false);
   const selectedHotspot = hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? hotspots[0];
   const profile = BUILDING_VISUAL_PROFILES[buildingId] ?? {
     kicker: 'PALACE VIEW',
@@ -84,11 +87,17 @@ export function BuildingImageHotspot({
           className="building-main-image"
           src={mainImage}
           alt={`${buildingName}主图`}
-          loading="eager"
+          loading="lazy"
           onError={(event) => {
             event.currentTarget.classList.add('is-missing');
+            setImageFailed(true);
           }}
         />
+        {imageFailed && (
+          <div className="image-fallback-message" role="alert">
+            建筑图片暂时加载失败，请稍后重试。
+          </div>
+        )}
 
         {hotspots.map((hotspot, index) => {
           const active = hotspot.id === selectedHotspot?.id;

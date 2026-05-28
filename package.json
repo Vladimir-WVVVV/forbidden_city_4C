@@ -1,5 +1,6 @@
 {
-  "name": "my-app",
+  "name": "zijin-yingzaozhi",
+  "description": "紫禁营造志：故宫建筑细节交互可视化作品",
   "private": true,
   "version": "0.0.0",
   "type": "module",
